@@ -7,6 +7,7 @@ are added onto a foundation already known to work.
 """
 
 import os
+import sys
 import requests
 from dotenv import load_dotenv
 
@@ -40,7 +41,7 @@ response = requests.get(url, params=params, headers=headers)
 # development, which is why this check exists at stage 1 rather than later.
 if response.status_code != 200:
     print(f"Request failed: {response.status_code} - {response.text}")
-    exit(1)
+    sys.exit(1)
 
 data = response.json()
 
