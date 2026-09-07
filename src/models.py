@@ -39,6 +39,29 @@ class Paper(BaseModel):
         return value.lower().strip() if value else None
 
 
+class SubQuestion(BaseModel):
+    """
+    One decomposed part of the research question. Mirrors SubQuestion in
+    Diagram 1.
+
+    text is the question a reader would recognise; search_query is the keyword
+    form sent to the literature API. They are separate fields because they
+    serve different consumers: the researcher reviews the first at the
+    approval checkpoint, and only the second is ever sent to a search
+    endpoint. Collapsing them would mean approving something other than what
+    is searched.
+    """
+
+    id: int
+    text: str
+    search_query: str
+
+    # Both default to the state that has not happened yet, so neither approval
+    # nor a retry can be assumed by omission.
+    approved: bool = False
+    retried_once: bool = False
+
+
 class SearchResponse(BaseModel):
     """
     The shape of a Semantic Scholar search response, as distinct from the
