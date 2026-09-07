@@ -9,6 +9,7 @@ semantic tasks and leaving exact rules deterministic.
 
 import logging
 
+from src.crossref import verify
 from src.models import Paper
 
 logger = logging.getLogger(__name__)
@@ -60,3 +61,29 @@ def deduplicate_by_doi(papers: list[Paper]) -> list[Paper]:
         duplicates,
     )
     return unique
+
+
+def validate_dois_and_metadata(papers: list[Paper]) -> list[Paper]:
+    """
+    Check every record against Crossref and return them with the outcome set.
+
+    A failure to reach Crossref is deliberately not caught here. Recording it
+    as an unverified result would conflate an infrastructure fault with a
+    verification finding, which is the same conflation the status-code
+    handling at stage 1 exists to prevent. Retryable failures have already
+    been absorbed by the client, so anything reaching this point is terminal
+    and the caller needs to hear about it rather than read it as evidence
+    about a paper.
+
+    Called once per paper. The ad-hoc commands used during development called
+    verify twice per record, which doubled Crossref requests for no benefit.
+    """
+    validated = [verify(paper) for paper in papers]
+
+    verified_count = sum(1 for paper in validated if paper.doi_verified)
+    logger.info(
+        "Validation: %d of %d records verified against Crossref",
+        verified_count,
+        len(validated),
+    )
+    return validated
