@@ -102,7 +102,13 @@ def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
     than a defensive choice.
     """
     limiter.wait()
-    response = requests.get(url, timeout=10, **kwargs)
+
+    # 30 seconds rather than 10: a successful response was observed taking 8
+    # seconds, so a 10-second ceiling would abandon requests the service was
+    # still answering. Set from measurement rather than convention. A ceiling
+    # is still required, since requests applies none by default and a stalled
+    # connection would otherwise hang indefinitely.
+    response = requests.get(url, timeout=30, **kwargs)
 
     if response.status_code in (429, 500, 502, 503, 504):
         raise RetryableHTTPError(f"{response.status_code} - {response.text}")

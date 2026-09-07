@@ -22,6 +22,13 @@ class Paper(BaseModel):
     # unverified until Crossref confirms it, rather than assumed sound.
     doi_verified: bool = False
 
+    # A boolean alone cannot distinguish a DOI Crossref rejected from one it
+    # was never able to hold. Testing showed arXiv DOIs are registered with
+    # DataCite rather than Crossref, so unverified would otherwise conflate a
+    # doubtful record with an ordinary preprint. The reason is recorded here so
+    # the Evaluation Agent can weigh the two differently.
+    verification_note: str | None = None
+
     # DOIs are case-insensitive, so the same paper can arrive with different
     # capitalisation from different sources. Normalising here rather than at
     # each comparison means deduplication cannot miss a duplicate that differs
@@ -30,6 +37,7 @@ class Paper(BaseModel):
     @classmethod
     def normalise_doi(cls, value: str | None) -> str | None:
         return value.lower().strip() if value else None
+
 
 class SearchResponse(BaseModel):
     """
