@@ -1,11 +1,13 @@
 # Evidence of Execution
 
-Stage 1: retrieval from the Semantic Scholar Academic Graph API.
+Execution and testing evidence for the research agent, in the order it was
+captured. Filenames carry the stage the behaviour belongs to, so the sequence
+also records how the implementation developed.
 
-Screenshots evidence the behaviour of the live API. Failure modes the live
-service does not produce, such as a malformed response body, an absent
-`total` field or a `data` field of the wrong type, are evidenced by unit
-tests at stage 2 rather than by contrived captures.
+Screenshots evidence the behaviour of the live services. Conditions those
+services do not produce on demand, such as a response missing its `total`
+field, a `data` field of the wrong type, or a record with no title, are
+covered by unit tests rather than by contrived captures.
 
 | File | What it demonstrates |
 |---|---|
@@ -24,4 +26,4 @@ tests at stage 2 rather than by contrived captures.
 | 13_stage2_deduplication_by_doi.png | Deduplication across three constructed records. Two DOIs differing only in case are treated as one paper, confirming that normalisation on construction is what makes comparison reliable, and a record with no DOI is retained rather than discarded. Three records in, two out |
 | 14_stage2_pipeline_search_dedupe_validate.png | Search, deduplication and Crossref validation chained as the orchestrator sequences them, over five live records. One of five verified: three are arXiv preprints and one carries no DOI at all. Each DOI is checked once. Shows both the pipeline working and the practical reach of validating against a single registration agency |
 | 15_stage2_pipeline_with_storage.png | The complete stage 2 pipeline in one run: search, deduplication, Crossref validation, and saving to timestamped Markdown and JSON. Five records, one verified, both output paths reported |
-| 16_stage2_unit_tests_passing.png | Twelve unit tests passing in under a second, covering DOI normalisation, response validation, the conversion from API record to Paper, deduplication rules, and Markdown rendering of missing abstracts and verification status. All read a recorded response rather than calling the API, so the suite is deterministic and runs while the service is rate limiting |
+| 16_stage2_unit_tests_passing.png | The unit test suite passing in under a second, covering DOI normalisation, response validation, the conversion from API record to Paper, deduplication rules, and Markdown rendering of missing abstracts and verification status. All read a recorded response rather than calling the API, so the suite is deterministic and runs while the service is rate limiting. The suite has since grown to fifteen tests with the addition of rejection cases |
