@@ -62,7 +62,35 @@ class RetryableHTTPError(Exception):
     502, 503, 504. A distinct exception type exists so the retry policy can
     select on it. A 403 or 404 raises nothing retryable, because repeating a
     refused or absent request cannot change its outcome.
+
+    Carries retry_after when the server supplied that header, so the wait
+    policy can defer to the service's own instruction instead of guessing.
     """
+
+    def __init__(self, message: str, retry_after: float | None = None):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+# The exponential curve is the fallback, used whenever the server gives no
+# instruction of its own.
+_exponential_wait = wait_exponential(multiplier=1, min=1, max=30)
+
+
+def _wait_policy(retry_state) -> float:
+    """
+    Prefer the server's Retry-After over the exponential curve.
+
+    A 429 is evidence that the pacing assumption was wrong, and the service is
+    better placed than this client to say how long to wait. Deferring to it is
+    not a departure from the proactive/reactive separation: it is the reactive
+    layer reading the authoritative signal rather than inventing one. Capped so
+    an unexpectedly large value cannot stall a run indefinitely.
+    """
+    hinted = getattr(retry_state.outcome.exception(), "retry_after", None)
+    if hinted is not None:
+        return min(hinted, 60.0)
+    return _exponential_wait(retry_state)
 
 
 def _log_retry(retry_state) -> None:
@@ -87,8 +115,11 @@ def _log_retry(retry_state) -> None:
 # the behaviour that produces a 429 in the first place.
 @retry(
     retry=retry_if_exception_type((RetryableHTTPError, requests.RequestException)),
-    stop=stop_after_attempt(4),
-    wait=wait_exponential(multiplier=1, min=1, max=10),
+    # Six rather than four: four consecutive 429s were observed under normal
+    # development use, exhausting the policy and failing a sound request. The
+    # ceiling is set from that observation rather than chosen for neatness.
+    stop=stop_after_attempt(6),
+    wait=_wait_policy,
     reraise=True,
     before_sleep=_log_retry,
 )
@@ -111,7 +142,14 @@ def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
     response = requests.get(url, timeout=30, **kwargs)
 
     if response.status_code in (429, 500, 502, 503, 504):
-        raise RetryableHTTPError(f"{response.status_code} - {response.text}")
+        # Retry-After may arrive as seconds or as an HTTP date. Only the
+        # numeric form is read: the date form is rare here, and parsing it
+        # wrongly would produce a worse wait than the exponential fallback.
+        header = response.headers.get("Retry-After")
+        retry_after = float(header) if header and header.isdigit() else None
+        raise RetryableHTTPError(
+            f"{response.status_code} - {response.text}", retry_after=retry_after
+        )
 
     # Every other outcome, success or terminal failure, is returned as-is for
     # the caller to interpret. Raising here would remove the caller's ability
