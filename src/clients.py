@@ -55,6 +55,13 @@ semantic_scholar_limiter = RateLimiter(1.0)
 # than to satisfy a stated requirement.
 crossref_limiter = RateLimiter(1.0)
 
+# The Gemini free tier is limited by requests per minute rather than per
+# second. Six seconds corresponds to ten per minute, which is the documented
+# free-tier allowance at the time of writing. Deliberately conservative: if the
+# published limit is higher the run is slower than necessary, whereas if it is
+# lower every LLM call fails.
+gemini_limiter = RateLimiter(6.0)
+
 
 class RetryableHTTPError(Exception):
     """
@@ -123,14 +130,18 @@ def _log_retry(retry_state) -> None:
     reraise=True,
     before_sleep=_log_retry,
 )
-def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
+def request(method: str, url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
     """
-    Issue a paced GET, retrying only failures a later attempt could resolve.
+    Issue a paced request, retrying only failures a later attempt could resolve.
 
     Reactive by design: it handles failures that occur despite the pacing
     above. Semantic Scholar's own API release notes require exponential
     backoff, so this is compliance with a stated provider requirement rather
     than a defensive choice.
+
+    Method is a parameter rather than there being one decorated function per
+    verb, so that a change to the retry policy cannot apply to some callers and
+    not others.
     """
     limiter.wait()
 
@@ -139,7 +150,7 @@ def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
     # still answering. Set from measurement rather than convention. A ceiling
     # is still required, since requests applies none by default and a stalled
     # connection would otherwise hang indefinitely.
-    response = requests.get(url, timeout=30, **kwargs)
+    response = requests.request(method, url, timeout=30, **kwargs)
 
     if response.status_code in (429, 500, 502, 503, 504):
         # Retry-After may arrive as seconds or as an HTTP date. Only the
@@ -155,3 +166,20 @@ def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
     # the caller to interpret. Raising here would remove the caller's ability
     # to distinguish a 403 from a 200, which stage 3 depends on.
     return response
+
+
+def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
+    """Paced, retrying GET."""
+    return request("GET", url, limiter, **kwargs)
+
+
+def post(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
+    """
+    Paced, retrying POST.
+
+    Retrying a POST is safe here only because the endpoints this system posts
+    to are generative rather than state-changing: a repeated request produces
+    another answer, not a duplicate record. That would not hold for an
+    endpoint that creates something.
+    """
+    return request("POST", url, limiter, **kwargs)
