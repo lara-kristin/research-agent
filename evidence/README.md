@@ -2,10 +2,18 @@
 
 Stage 1: retrieval from the Semantic Scholar Academic Graph API.
 
+Screenshots evidence the behaviour of the live API. Failure modes the live
+service does not produce, such as a malformed response body, an absent
+`total` field or a `data` field of the wrong type, are evidenced by unit
+tests at stage 2 rather than by contrived captures.
+
 | File | What it demonstrates |
 |---|---|
-| 01_stage1_failure_500_server_error.png | Original implementation: a server fault surfaces as KeyError: 'data', reporting nothing about the HTTP status or the reason |
-| 02_stage1_failure_429_key_loaded.png | The same defect on a rate-limit response. The key loads correctly from .env, eliminating local configuration as the cause |
-| 03_stage1_retrieval_success.png | Three papers retrieved with status-code validation in place |
-| 04_stage1_error_handling_verified.png | Status-code check verified by deliberately invalidating the API key. The resulting 403 is reported directly rather than surfacing as an unrelated KeyError |
-| 05_stage1_error_handling_live_429.png | The same check handling a genuine rate-limit response during normal use, followed by a successful retry. Intermittent 429s are a normal condition of this API rather than a one-off fault |
+| 01_stage1_failure_500_server_error.png | Superseded implementation: a server fault ends in `KeyError: 'data'` rather than being handled. The status and message are visible only because of a temporary diagnostic print added during investigation |
+| 02_stage1_failure_429_key_loaded.png | The same defect as 01, on a rate-limit response. The key loads from `.env`, eliminating local configuration as the cause |
+| 03_stage1_retrieval_success.png | Three papers retrieved from the live API and titles printed |
+| 04_stage1_error_handling_verified.png | Status-code check verified by deliberately invalidating the key. The 403 is reported directly rather than as an unrelated `KeyError`. Confirms that an invalid key is refused rather than throttled, which is what establishes the 429 in 02 as a genuine rate limit rather than a rejected credential |
+| 05_stage1_error_handling_live_429.png | The same check as 04, handling a live rate-limit response, followed by a successful retry. Intermittent 429s are a normal condition of this API rather than a one-off fault |
+| 06_stage1_missing_api_key_guard.png | An absent key is reported as a configuration fault and exits 1, rather than proceeding as an unauthenticated request |
+| 07_stage1_zero_results_success.png | A query with no matches is reported as a successful request and exits 0, distinguishing an empty result set from a failed one |
+| 08_stage1_transport_failure.png | A live read timeout. The request opens but no response arrives within the configured limit, and it is reported as a transport failure rather than as an HTTP error response |
