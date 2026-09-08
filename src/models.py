@@ -5,7 +5,27 @@ such as the OpenAlex fallback named in the design proposal, is confined to the
 client that adapts it.
 """
 
+from enum import Enum
+
 from pydantic import BaseModel, Field, field_validator
+
+
+class Decision(Enum):
+    """
+    A researcher's verdict at a review checkpoint. Mirrors the Decision
+    enumeration in Diagram 1.
+
+    All four values live here, but the two checkpoints accept different
+    subsets: sub-question review takes APPROVE or REVISE, and evidence review
+    takes APPROVE, REFINE or REJECT_SCOPE. Keeping one enumeration rather than
+    two avoids two names for the same verdict, and each checkpoint states
+    which values it accepts.
+    """
+
+    APPROVE = "approve"
+    REVISE = "revise"
+    REFINE = "refine"
+    REJECT_SCOPE = "reject_scope"
 
 
 class Paper(BaseModel):

@@ -15,12 +15,12 @@ from src.models import SubQuestion
 
 logger = logging.getLogger(__name__)
 
-# Fixed at three rather than the 3..5 the class diagram permits. Each
-# sub-question is a separate search against a key limited to one request per
-# second, and an unmet threshold adds a reformulated retry, so five
-# sub-questions can mean ten requests in one run. Three keeps a run to a
-# length that completes reliably on this quota. Recorded as a deliberate
-# divergence from the diagram rather than an oversight.
+# The class diagram permits 3..5; the implementation fixes the count at the
+# lower bound of that range. Each sub-question is a separate search against a
+# key limited to one request per second, and an unmet threshold adds a
+# reformulated retry, so five sub-questions can mean ten requests in one run.
+# Three keeps a run to a length that completes reliably on this quota. A fixed
+# count also makes a run's cost predictable, which a variable one would not.
 SUB_QUESTION_COUNT = 3
 
 # The schema is enforced by the provider, so the prompt does not need to ask

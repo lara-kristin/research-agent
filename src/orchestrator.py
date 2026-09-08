@@ -13,7 +13,9 @@ from datetime import datetime
 from pathlib import Path
 
 from src.crossref import verify
-from src.models import Paper
+from src.models import Paper, SubQuestion
+from src.planning_agent import reformulate_query
+from src.retrieval_agent import assess_threshold, retrieve_evidence
 
 # Runs write here rather than into the repository root, so output is separable
 # from source. Git-ignored, with one representative run copied into evidence/
@@ -21,6 +23,80 @@ from src.models import Paper
 OUTPUT_DIR = Path("output")
 
 logger = logging.getLogger(__name__)
+
+
+def retrieve_for_plan(
+    sub_questions: list[SubQuestion], limit: int = 5
+) -> list[Paper]:
+    """
+    Retrieve evidence for every approved sub-question, reformulating once
+    where a search falls short.
+
+    The one-retry limit is enforced here rather than inside either agent.
+    retried_once records that a retry has happened; this function is what
+    reads it and declines a second, which keeps retry counting among the
+    deterministic responsibilities the design proposal assigns to the
+    orchestrator. Diagram 2 routes the request the same way: the Retrieval
+    Agent reports an unmet threshold, and the orchestrator asks the Planning
+    Agent for a new query.
+
+    A sub-question still short after its retry is logged and its records kept.
+    Diagram 3 flags insufficient coverage and proceeds rather than stopping:
+    thin evidence for one aspect of a question is a finding the researcher
+    should see at the evidence checkpoint, not a reason to abandon the other
+    aspects.
+
+    No separate search budget is enforced. With the sub-question count fixed
+    at three and one retry each, a run is bounded at six searches by
+    construction, so the searchBudget field in Diagram 1 could never bind. If
+    the count is ever made variable, that field becomes necessary.
+    """
+    all_papers: list[Paper] = []
+    thin_coverage: list[int] = []
+
+    for sub_question in sub_questions:
+        papers = retrieve_evidence(sub_question, limit=limit)
+
+        # Assessed once and the result held. Calling the check again in a
+        # later branch would issue a second identical log line, which would
+        # misrepresent the run in the record the design proposal requires for
+        # post-run inspection.
+        met = assess_threshold(papers)
+
+        if not met and not sub_question.retried_once:
+            sub_question = reformulate_query(sub_question)
+            retried_papers = retrieve_evidence(sub_question, limit=limit)
+
+            # The reformulated query is kept only if it did better. A broader
+            # query can return less than the original, and silently accepting
+            # the second result would discard evidence already retrieved.
+            if len(retried_papers) > len(papers):
+                papers = retried_papers
+                met = assess_threshold(papers)
+            else:
+                logger.info(
+                    "Reformulation for sub-question %d returned no more records; keeping the original result",
+                    sub_question.id,
+                )
+
+        if not met:
+            thin_coverage.append(sub_question.id)
+
+        all_papers.extend(papers)
+
+    if thin_coverage:
+        logger.warning(
+            "Insufficient coverage for sub-question(s) %s. This is reported rather than corrected: "
+            "the researcher judges it at the evidence checkpoint",
+            ", ".join(str(i) for i in thin_coverage),
+        )
+
+    logger.info(
+        "Retrieval complete: %d records across %d sub-questions",
+        len(all_papers),
+        len(sub_questions),
+    )
+    return all_papers
 
 
 def deduplicate_by_doi(papers: list[Paper]) -> list[Paper]:
