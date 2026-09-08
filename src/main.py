@@ -12,7 +12,7 @@ import argparse
 import logging
 import sys
 
-from src.clients import RetryableHTTPError
+from src.clients import QuotaExhaustedError, RetryableHTTPError
 from src.interface import review_sub_questions
 from src.llm import LLMResponseError
 from src.llm import MissingAPIKeyError as MissingLLMKeyError
@@ -94,6 +94,12 @@ def main() -> int:
     except LLMResponseError as exc:
         logger.error("Planning failed: %s", exc)
         return 1
+    except QuotaExhaustedError as exc:
+        # Reported separately from other failures because the remedy is
+        # different: no amount of waiting within a run will help, and the
+        # allowance resets on a schedule the client cannot influence.
+        logger.error("LLM quota exhausted, not retryable within this run: %s", exc)
+        return 1
     except KeyboardInterrupt:
         # The checkpoint waits on input, so this is the ordinary way to stop a
         # run rather than a fault. Reported as such, and nothing has been
@@ -123,6 +129,9 @@ def main() -> int:
         # Reformulation needs the model, so a planning failure can occur here
         # as well as at decomposition.
         logger.error("Query reformulation failed: %s", exc)
+        return 1
+    except QuotaExhaustedError as exc:
+        logger.error("LLM quota exhausted during retrieval: %s", exc)
         return 1
 
     if not papers:

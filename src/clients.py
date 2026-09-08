@@ -55,12 +55,28 @@ semantic_scholar_limiter = RateLimiter(1.0)
 # than to satisfy a stated requirement.
 crossref_limiter = RateLimiter(1.0)
 
-# The Gemini free tier is limited by requests per minute rather than per
-# second. Six seconds corresponds to ten per minute, which is the documented
-# free-tier allowance at the time of writing. Deliberately conservative: if the
-# published limit is higher the run is slower than necessary, whereas if it is
-# lower every LLM call fails.
-gemini_limiter = RateLimiter(6.0)
+# Four seconds corresponds to fifteen requests per minute, the allowance shown
+# for this model on the project's own rate-limit dashboard. Set from that
+# figure rather than from documentation: an earlier interval of six seconds was
+# derived from an assumed limit of ten per minute, which the model in use at
+# the time did not have, so the limiter permitted twice the real rate and
+# contributed to rate-limit failures it existed to prevent.
+gemini_limiter = RateLimiter(4.0)
+
+
+class QuotaExhaustedError(Exception):
+    """
+    Raised when a 429 reports an exhausted allowance rather than too fast a
+    rate. The two arrive with the same status code and mean different things:
+    a rate limit is relieved by waiting seconds, whereas a daily quota is
+    relieved only when it resets.
+
+    Not retryable, and that distinction is not cosmetic. Retrying a quota
+    failure fails every attempt and spends each one against the very
+    allowance that is exhausted, so the policy meant to recover from
+    congestion instead deepens the exhaustion. Observed in development: a
+    project limited to 20 requests per day recorded 21.
+    """
 
 
 class RetryableHTTPError(Exception):
@@ -153,6 +169,18 @@ def request(method: str, url: str, limiter: RateLimiter, **kwargs) -> requests.R
     response = requests.request(method, url, timeout=30, **kwargs)
 
     if response.status_code in (429, 500, 502, 503, 504):
+        # A quota failure is separated from a rate-limit failure before the
+        # retry policy sees it. Both are 429s, so the body is what
+        # distinguishes them: providers name the exhausted quota in it.
+        # Matching on the body is fragile, and deliberately so rather than
+        # silently: a wording change makes a quota failure look retryable
+        # again, which is the milder of the two errors available here.
+        body = response.text.lower()
+        if response.status_code == 429 and (
+            "quota" in body or "resource_exhausted" in body
+        ):
+            raise QuotaExhaustedError(f"{response.status_code} - {response.text}")
+
         # Retry-After may arrive as seconds or as an HTTP date. Only the
         # numeric form is read: the date form is rare here, and parsing it
         # wrongly would produce a worse wait than the exponential fallback.

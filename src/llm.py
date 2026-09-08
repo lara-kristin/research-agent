@@ -22,7 +22,15 @@ logger = logging.getLogger(__name__)
 # stop describing the system a reader runs. gemini-2.5-flash was tried first
 # and returned 404: it is no longer available to new keys, which is also why
 # availability is confirmed by calling a model rather than by listing it.
-MODEL = "gemini-3.6-flash"
+#
+# The lite variant rather than gemini-3.6-flash, which was used initially. The
+# project's free-tier allowance for this model is 500 requests per day against
+# 20 for 3.6-flash, and 15 per minute against 5. The semantic tasks asked of
+# the model here are question decomposition and query reformulation, neither
+# of which requires the strongest available model, so capability that is not
+# needed is traded for runs that are. Output quality between the two was not
+# compared: the change was made for quota reasons.
+MODEL = "gemini-3.5-flash-lite"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 
 load_dotenv()
