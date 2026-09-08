@@ -123,10 +123,13 @@ def reformulate_query(sub_question: SubQuestion) -> SubQuestion:
     Produce a different search query for a sub-question that returned too
     little.
 
-    Returns a copy with the new query and retried_once set, so the caller
-    cannot request a second reformulation by accident. The design proposal
-    permits one automatic retry per sub-question, and the flag is what makes
-    that limit hold without the orchestrator having to remember it.
+    Returns a copy with the new query and retried_once set. The flag records
+    that a retry has happened; it does not prevent another. Calling this twice
+    would issue two requests, because enforcing the one-retry limit is a
+    workflow rule and the design proposal assigns workflow rules to the
+    orchestrator. The orchestrator checks the flag before calling, which keeps
+    retry counting deterministic rather than depending on an agent to police
+    a limit on itself.
     """
     prompt = f"""An academic search returned too few results.
 
