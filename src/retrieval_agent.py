@@ -42,19 +42,49 @@ def retrieve_evidence(sub_question: SubQuestion, limit: int = 5) -> list[Paper]:
     return search(sub_question.search_query, limit=limit)
 
 
+def count_usable(papers: list[Paper]) -> int:
+    """
+    Count the records that carry the evidence signal later stages need.
+
+    A record without an abstract cannot be relevance-scored, so it contributes
+    nothing to the question of whether enough evidence was found. Semantic
+    Scholar does not return abstracts for every publisher, so this is a
+    condition observed in ordinary use rather than an edge case: a search can
+    return three records of which only one is assessable.
+
+    Diagram 3 branches on usable records rather than on records retrieved,
+    so counting all of them would diverge from the design as well as
+    overstate the evidence.
+    """
+    return sum(1 for paper in papers if paper.abstract)
+
+
 def assess_threshold(papers: list[Paper]) -> bool:
     """
     Report whether a result set meets the configured threshold.
 
-    Counts records rather than assessing their relevance, which is the
-    Evaluation Agent's work and needs the model. A count is a deterministic
-    check and stays here.
+    Counts usable records rather than assessing their relevance. Relevance is
+    the Evaluation Agent's work and needs the model; a count is deterministic
+    and stays here.
+
+    Records without an abstract are still retained and reported to the
+    researcher. They do not count towards the threshold, which is a different
+    question from whether they are worth keeping.
     """
-    met = len(papers) >= RECORD_THRESHOLD
+    usable = count_usable(papers)
+    met = usable >= RECORD_THRESHOLD
+
+    if usable < len(papers):
+        logger.info(
+            "%d of %d records carry an abstract and can be assessed downstream",
+            usable,
+            len(papers),
+        )
+
     logger.info(
-        "Threshold %s: %d records against a threshold of %d",
+        "Threshold %s: %d usable records against a threshold of %d",
         "met" if met else "unmet",
-        len(papers),
+        usable,
         RECORD_THRESHOLD,
     )
     return met

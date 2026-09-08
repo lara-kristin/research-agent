@@ -15,7 +15,7 @@ from pathlib import Path
 from src.crossref import verify
 from src.models import Paper, SubQuestion
 from src.planning_agent import reformulate_query
-from src.retrieval_agent import assess_threshold, retrieve_evidence
+from src.retrieval_agent import assess_threshold, count_usable, retrieve_evidence
 
 # Runs write here rather than into the repository root, so output is separable
 # from source. Git-ignored, with one representative run copied into evidence/
@@ -46,11 +46,26 @@ def retrieve_for_plan(
     should see at the evidence checkpoint, not a reason to abandon the other
     aspects.
 
+    Retrieval refuses to run on sub-questions the researcher has not approved.
+    A flag recording approval is only a control if something checks it.
+
     No separate search budget is enforced. With the sub-question count fixed
     at three and one retry each, a run is bounded at six searches by
     construction, so the searchBudget field in Diagram 1 could never bind. If
     the count is ever made variable, that field becomes necessary.
     """
+    # The checkpoint is enforced here rather than assumed. Recording approval
+    # on each sub-question only helps if something reads it: without this
+    # check, Human Review 1 would be enforced by the order in which functions
+    # happen to be called, which is a convention rather than a control. The
+    # design proposal makes researcher authority over scope a property of the
+    # system, so it is checked where the consequence occurs.
+    unapproved = [sq.id for sq in sub_questions if not sq.approved]
+    if unapproved:
+        raise ValueError(
+            f"Retrieval requires approved sub-questions; {unapproved} are unapproved."
+        )
+
     all_papers: list[Paper] = []
     thin_coverage: list[int] = []
 
@@ -67,10 +82,11 @@ def retrieve_for_plan(
             sub_question = reformulate_query(sub_question)
             retried_papers = retrieve_evidence(sub_question, limit=limit)
 
-            # The reformulated query is kept only if it did better. A broader
-            # query can return less than the original, and silently accepting
-            # the second result would discard evidence already retrieved.
-            if len(retried_papers) > len(papers):
+            # The reformulated query is kept only if it did better, judged on
+            # usable records rather than the raw count. A retry returning more
+            # records but fewer abstracts is not an improvement, and comparing
+            # totals would treat it as one.
+            if count_usable(retried_papers) > count_usable(papers):
                 papers = retried_papers
                 met = assess_threshold(papers)
             else:
