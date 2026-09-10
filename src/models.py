@@ -82,6 +82,32 @@ class SubQuestion(BaseModel):
     retried_once: bool = False
 
 
+class Assessment(BaseModel):
+    """
+    One paper judged against one sub-question. Mirrors Assessment in
+    Diagram 1.
+
+    Holds identifiers rather than the objects themselves. A relevance score is
+    about a pairing, and every paper is scored against every sub-question, so
+    embedding whole papers would repeat each abstract once per sub-question in
+    memory and in the saved output.
+
+    paper_title is the identifier because a DOI cannot serve as one: records
+    without a DOI are retained deliberately, so keying on it would make some
+    papers unassessable for a reason unrelated to their relevance.
+    """
+
+    paper_title: str
+    sub_question_id: int
+    relevance_score: float = Field(ge=0.0, le=1.0)
+    reason: str
+
+    # Set by the agent applying a threshold, not by the model. The model
+    # scores; the decision of what counts as selected is a deterministic rule
+    # and stays auditable.
+    selected: bool = False
+
+
 class SearchResponse(BaseModel):
     """
     The shape of a Semantic Scholar search response, as distinct from the

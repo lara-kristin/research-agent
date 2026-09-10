@@ -13,14 +13,24 @@ from datetime import datetime
 from pathlib import Path
 
 from src.crossref import verify
-from src.models import Paper, SubQuestion
-from src.planning_agent import reformulate_query
+from src.evaluation_agent import evaluate_evidence
+from src.interface import review_evidence, review_sub_questions
+from src.models import Assessment, Decision, Paper, SubQuestion
+from src.planning_agent import plan_research, reformulate_query
 from src.retrieval_agent import assess_threshold, count_usable, retrieve_evidence
 
 # Runs write here rather than into the repository root, so output is separable
 # from source. Git-ignored, with one representative run copied into evidence/
 # instead: an accumulating folder of run artefacts is not source code.
 OUTPUT_DIR = Path("output")
+
+# One scope revision per run, as Diagram 3 specifies. Revision at the first
+# checkpoint is unrestricted because it costs one model call; correcting after
+# evidence review repeats retrieval, validation and assessment, so it is
+# capped. A second rejection ends the run and recommends restarting with a
+# rephrased question, which is a judgement about the question rather than
+# something further searching can resolve.
+MAX_SCOPE_REVISIONS = 1
 
 logger = logging.getLogger(__name__)
 
@@ -290,3 +300,89 @@ def save_papers(papers: list[Paper], query: str) -> tuple[Path, Path]:
 
     logger.info("Saved %d records to %s and %s", len(papers), markdown_path, json_path)
     return markdown_path, json_path
+
+
+def _plan_with_review(
+    question: str, feedback: str | None = None, use_cache: bool = True
+) -> list[SubQuestion]:
+    """
+    Decompose the question and revise until the researcher approves.
+
+    The loop is here rather than in the Planning Agent or the interface,
+    because Diagram 2 places it in the orchestrator's control flow: the agent
+    produces a plan, the interface collects a verdict, and neither decides
+    whether to go round again.
+
+    Uncapped by design. The design proposal leaves revision at this checkpoint
+    unrestricted and caps only the later one, on the grounds that correcting
+    here costs a single model call. Each iteration is a human choosing to
+    revise, so there is no runaway to guard against.
+
+    Approval is recorded on the sub-questions themselves rather than implied
+    by returning from this function, and retrieval refuses any that lack it.
+    """
+    while True:
+        sub_questions = plan_research(question, feedback, use_cache=use_cache)
+        decision, feedback = review_sub_questions(sub_questions)
+
+        if decision is Decision.APPROVE:
+            return [sq.model_copy(update={"approved": True}) for sq in sub_questions]
+
+
+def run_research(
+    question: str, limit: int = 5, use_cache: bool = True
+) -> tuple[list[Paper], list[Assessment]] | None:
+    """
+    Run the whole sequence and return the approved evidence, or None if the
+    researcher rejected the scope and no revision remains.
+
+    The sequence lives here rather than in the entry point because the design
+    proposal makes the orchestrator the central coordinator, and Diagram 1
+    places both review presentations on it. The entry point parses arguments,
+    configures logging and translates the outcome into an exit code.
+
+    The outer loop is the scope revision cycle. A rejection returns to
+    decomposition carrying the researcher's reason, so the second attempt is a
+    correction rather than another guess, and everything downstream is redone
+    because a changed plan invalidates the evidence gathered under the old
+    one.
+    """
+    scope_revisions = 0
+    feedback: str | None = None
+
+    while True:
+        sub_questions = _plan_with_review(question, feedback, use_cache=use_cache)
+
+        papers = retrieve_for_plan(sub_questions, limit=limit, use_cache=use_cache)
+        if not papers:
+            logger.info("No matching papers for any sub-question.")
+            return [], []
+
+        papers = deduplicate_by_doi(papers)
+        papers = validate_dois_and_metadata(papers)
+        assessments = evaluate_evidence(papers, sub_questions, use_cache=use_cache)
+
+        decision, kept_titles, feedback = review_evidence(assessments, papers)
+
+        if decision is not Decision.REJECT_SCOPE:
+            # Filtered by title rather than by index, so the set the
+            # researcher approved is the set that reaches synthesis even if
+            # the ordering changes.
+            approved = [paper for paper in papers if paper.title in kept_titles]
+            logger.info("Proceeding with %d approved paper(s)", len(approved))
+            return approved, assessments
+
+        if scope_revisions >= MAX_SCOPE_REVISIONS:
+            logger.warning(
+                "Scope rejected twice. Stopping: a question that survives one "
+                "revision and is still wrong needs rephrasing rather than "
+                "further searching"
+            )
+            return None
+
+        scope_revisions += 1
+        logger.info(
+            "Scope revision %d of %d, returning to decomposition",
+            scope_revisions,
+            MAX_SCOPE_REVISIONS,
+        )

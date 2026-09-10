@@ -72,6 +72,51 @@ def test_punctuation_and_case_differences_still_verify(monkeypatch):
     assert result.doi_verified is True
 
 
+def test_markup_in_the_registered_title_still_verifies(monkeypatch):
+    """
+    Publishers deposit titles containing presentational markup, so a Crossref
+    record can carry tags the retrieved title does not. Observed in a live
+    run, where a registered title arrived wrapped in italic tags.
+
+    The order of normalisation is what this protects: stripping
+    non-alphanumerics before removing tags leaves the letter inside each tag
+    behind, fusing a stray character into the surrounding words. The
+    comparison then fails on a title that is identical, and the paper is
+    flagged exactly as a fabricated citation would be.
+    """
+    registered = (
+        "<i>The Truth Becomes Clearer Through Debate!</i>\n"
+        "                    Multi-Agent Systems Unmask Fake News"
+    )
+    monkeypatch.setattr(
+        crossref, "get", lambda *a, **k: FakeResponse(200, _crossref_body(registered))
+    )
+
+    retrieved = (
+        "The Truth Becomes Clearer Through Debate! Multi-Agent Systems Unmask Fake News"
+    )
+    result = crossref.verify(Paper(title=retrieved, doi="10.1145/3726302.3730092"))
+
+    assert result.doi_verified is True
+
+
+def test_subscript_markup_does_not_prevent_a_match(monkeypatch):
+    """
+    The same fault in a different guise: chemical and mathematical titles
+    carry subscript and superscript tags routinely, so this is not confined to
+    one publisher's italics.
+    """
+    monkeypatch.setattr(
+        crossref,
+        "get",
+        lambda *a, **k: FakeResponse(200, _crossref_body("H<sub>2</sub>O in solution")),
+    )
+
+    result = crossref.verify(Paper(title="H2O in solution", doi="10.1/x"))
+
+    assert result.doi_verified is True
+
+
 def test_disagreeing_title_does_not_verify(monkeypatch):
     """
     A registered title that differs is recorded rather than treated as a

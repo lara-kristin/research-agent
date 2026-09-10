@@ -35,6 +35,13 @@ load_dotenv()
 CONTACT_EMAIL = os.getenv("CROSSREF_CONTACT_EMAIL")
 
 
+# Publishers deposit titles containing presentational markup, so a Crossref
+# record can carry tags the retrieved title does not. Observed in a live run:
+# a registered title arrived as "<i>The Truth Becomes Clearer Through
+# Debate!</i>" against the same title in plain text.
+_HTML_TAG = re.compile(r"<[^>]+>")
+
+
 def _normalise_title(title: str) -> str:
     """
     Reduce a title to a form two sources can be compared on.
@@ -42,8 +49,17 @@ def _normalise_title(title: str) -> str:
     Punctuation, case and spacing vary between sources for the same work, so
     comparing raw strings would report mismatches that are purely
     typographical.
+
+    Markup is removed before punctuation, and the order matters. Stripping
+    non-alphanumerics first leaves the letters inside a tag behind, so <i>
+    contributes a stray "i" that fuses with the surrounding words and the
+    comparison fails on a title that is in fact identical. That mattered
+    because a title mismatch is reported as the signal of a doubtful citation,
+    so a correctly registered paper was being flagged exactly as a fabricated
+    one would be.
     """
-    return re.sub(r"[^a-z0-9]+", "", title.lower())
+    without_markup = _HTML_TAG.sub(" ", title)
+    return re.sub(r"[^a-z0-9]+", "", without_markup.lower())
 
 
 def verify(paper: Paper) -> Paper:

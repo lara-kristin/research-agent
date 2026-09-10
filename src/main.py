@@ -1,11 +1,15 @@
 """
-Entry point. Run with: python -m src.main "your query here"
+Entry point. Run with: python -m src.main "your research question"
 
-Kept separate from the orchestrator so that the orchestrator's functions stay
-importable and testable without argument parsing or logging setup running as a
-side effect. This module is the only place that configures logging, because
-configuring it more than once would attach duplicate handlers and print every
-record twice.
+Reduced to four responsibilities: parse arguments, configure logging, call the
+orchestrator, and translate the outcome into an exit code. The run sequence
+itself lives in the orchestrator, because the design proposal makes that the
+central coordinator and Diagram 1 places both review presentations on it. An
+earlier version held the sequence here, which left the orchestrator holding
+orchestration functions while the entry point did the orchestrating.
+
+This is also the only module that configures logging. Configuring it more than
+once would attach duplicate handlers and print every record twice.
 """
 
 import argparse
@@ -13,18 +17,10 @@ import logging
 import sys
 
 from src.clients import QuotaExhaustedError, RetryableHTTPError
-from src.interface import review_sub_questions
 from src.llm import LLMResponseError
 from src.llm import MissingAPIKeyError as MissingLLMKeyError
 from src.logging_setup import configure
-from src.models import Decision, SubQuestion
-from src.orchestrator import (
-    deduplicate_by_doi,
-    retrieve_for_plan,
-    save_papers,
-    validate_dois_and_metadata,
-)
-from src.planning_agent import plan_research
+from src.orchestrator import run_research, save_papers
 from src.semantic_scholar import MissingAPIKeyError
 
 # Named explicitly rather than taken from __name__. Running a module with -m
@@ -33,42 +29,14 @@ from src.semantic_scholar import MissingAPIKeyError
 logger = logging.getLogger("src.main")
 
 
-def plan_with_review(question: str, use_cache: bool = True) -> list[SubQuestion]:
-    """
-    Decompose the question and revise until the researcher approves.
-
-    The loop lives here rather than in the Planning Agent or the interface,
-    because Diagram 2 places it in the orchestrator's control flow: the agent
-    produces a plan, the interface collects a verdict, and neither decides
-    whether to go round again.
-
-    Deliberately uncapped. The design proposal leaves revision at this
-    checkpoint unrestricted and caps only the later ones, on the grounds that
-    correcting here costs one model call whereas correcting after retrieval
-    costs searches and repeated validation. Each iteration is a human choosing
-    to revise, so there is no runaway to guard against.
-
-    Approval is recorded on the sub-questions themselves rather than implied
-    by returning from this function, so a later stage cannot mistake an
-    unreviewed plan for an approved one.
-    """
-    feedback = None
-    while True:
-        sub_questions = plan_research(question, feedback, use_cache=use_cache)
-        decision, feedback = review_sub_questions(sub_questions)
-
-        if decision is Decision.APPROVE:
-            return [sq.model_copy(update={"approved": True}) for sq in sub_questions]
-
-
 def main() -> int:
     """
-    Run the retrieval pipeline and return an exit code.
+    Run the pipeline and return an exit code.
 
     Returns a code rather than calling sys.exit directly, so the sequence
     remains callable from a test. Zero results returns 0: a search that
-    matched nothing is a successful request, and the distinction is the same
-    one the pipeline preserves throughout.
+    matched nothing is a successful request, and the distinction is the one
+    the pipeline preserves throughout.
     """
     parser = argparse.ArgumentParser(description="Retrieve and validate academic papers.")
     parser.add_argument("query", help="the research question to investigate")
@@ -100,73 +68,51 @@ def main() -> int:
             "Use --no-cache to force live requests"
         )
 
-    # The three failures below are the ones a user can act on: a missing
-    # credential, and a service that stayed unavailable across every retry.
-    # Anything else is a defect and should surface with its traceback rather
-    # than be reported as though it were expected.
+    # Each of these is a condition the person running the system can act on: a
+    # missing credential, a service that stayed unavailable across every
+    # retry, an exhausted daily allowance, or a model response that could not
+    # be used. Anything else is a defect and surfaces with its traceback
+    # rather than being reported as though it were expected.
     try:
-        sub_questions = plan_with_review(args.query, use_cache=not args.no_cache)
-    except MissingLLMKeyError as exc:
+        result = run_research(args.query, limit=args.limit, use_cache=not args.no_cache)
+    except (MissingAPIKeyError, MissingLLMKeyError) as exc:
         logger.error("%s", exc)
-        return 1
-    except LLMResponseError as exc:
-        logger.error("Planning failed: %s", exc)
         return 1
     except QuotaExhaustedError as exc:
-        # Reported separately from other failures because the remedy is
-        # different: no amount of waiting within a run will help, and the
-        # allowance resets on a schedule the client cannot influence.
+        # Reported separately because the remedy differs: no amount of waiting
+        # within a run will help, and the allowance resets on a schedule the
+        # client cannot influence.
         logger.error("LLM quota exhausted, not retryable within this run: %s", exc)
-        return 1
-    except KeyboardInterrupt:
-        # The checkpoint waits on input, so this is the ordinary way to stop a
-        # run rather than a fault. Reported as such, and nothing has been
-        # searched or saved at this point.
-        print()
-        logger.info("Cancelled at sub-question review. Nothing was searched.")
-        return 1
-
-    logger.info(
-        "Approved plan: %s",
-        "; ".join(f"{sq.id}={sq.search_query}" for sq in sub_questions),
-    )
-
-    try:
-        papers = retrieve_for_plan(
-            sub_questions, limit=args.limit, use_cache=not args.no_cache
-        )
-    except MissingAPIKeyError as exc:
-        logger.error("%s", exc)
         return 1
     except RetryableHTTPError as exc:
         # Retrieval spans several searches, so this can arrive part-way
-        # through. Any records already retrieved are discarded rather than
-        # saved, because a brief covering some sub-questions and silently
-        # omitting others would misrepresent the search it claims to report.
-        logger.error("Semantic Scholar unavailable after repeated attempts: %s", exc)
+        # through. Records already retrieved are discarded rather than saved,
+        # because a brief covering some sub-questions and silently omitting
+        # others would misrepresent the search it claims to report.
+        logger.error("A service was unavailable after repeated attempts: %s", exc)
         return 1
     except LLMResponseError as exc:
-        # Reformulation needs the model, so a planning failure can occur here
-        # as well as at decomposition.
-        logger.error("Query reformulation failed: %s", exc)
+        logger.error("The model returned no usable response: %s", exc)
         return 1
-    except QuotaExhaustedError as exc:
-        logger.error("LLM quota exhausted during retrieval: %s", exc)
+    except KeyboardInterrupt:
+        # Both checkpoints wait on input, so this is the ordinary way to stop a
+        # run rather than a fault.
+        print()
+        logger.info("Cancelled at a review checkpoint. Nothing was saved.")
         return 1
+
+    if result is None:
+        logger.info(
+            "Run stopped after a second scope rejection. Consider rephrasing the "
+            "research question and starting again."
+        )
+        return 1
+
+    papers, _assessments = result
 
     if not papers:
-        logger.info("No matching papers for any sub-question. Nothing to validate or save.")
+        logger.info("No approved evidence. Nothing to save.")
         return 0
-
-    papers = deduplicate_by_doi(papers)
-
-    try:
-        papers = validate_dois_and_metadata(papers)
-    except RetryableHTTPError as exc:
-        # Retrieval succeeded, so the records exist and are worth keeping. They
-        # are saved unverified rather than discarded, because a Crossref
-        # outage is a fact about the service and not about the papers.
-        logger.error("Crossref unavailable, saving records unverified: %s", exc)
 
     markdown_path, json_path = save_papers(papers, args.query)
     logger.info("Done. %s and %s", markdown_path, json_path)
