@@ -91,6 +91,25 @@ def read(method: str, url: str, params: dict | None, body: object | None) -> dic
         logger.warning("Unreadable cache entry %s, refetching: %s", path.name, exc)
         return None
 
+    # Parsing successfully is not the same as having the expected shape. An
+    # entry truncated by an interrupted write, or written by an earlier version
+    # of this module, can be valid JSON and still lack these keys, and reading
+    # into it directly would raise a KeyError part-way through a run, after
+    # LLM calls had already been spent. This is the same fault as the original
+    # stage 1 defect, where a response was read without checking whether it
+    # was the kind of response expected.
+    if not isinstance(entry, dict) or "stored_at" not in entry or "response" not in entry:
+        logger.warning(
+            "Cache entry %s is not in the expected form, refetching", path.name
+        )
+        return None
+
+    if not isinstance(entry["stored_at"], (int, float)):
+        logger.warning(
+            "Cache entry %s has an unusable timestamp, refetching", path.name
+        )
+        return None
+
     age = time.time() - entry["stored_at"]
     if age > MAX_AGE_SECONDS:
         logger.info(

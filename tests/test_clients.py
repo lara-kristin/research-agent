@@ -222,3 +222,38 @@ def test_a_failed_response_is_not_cached(monkeypatch):
     clients.get(url, clients.crossref_limiter, params={"query": "x"})
 
     assert len(attempts) == 2
+
+
+def test_a_structurally_invalid_cache_entry_is_treated_as_a_miss(monkeypatch, tmp_path):
+    """
+    Valid JSON is not the same as a usable entry. A file truncated by an
+    interrupted write, or left by an earlier version of the cache format, can
+    parse and still lack the keys read from it. Reading into it directly would
+    raise part-way through a run, after LLM calls had been spent, which is the
+    same fault as the original stage 1 defect one layer out.
+    """
+    monkeypatch.setattr(cache, "CACHE_DIR", tmp_path / "cache")
+    (tmp_path / "cache").mkdir()
+
+    url = "https://example.test/corrupt"
+    params = {"query": "x"}
+
+    # Written directly rather than through cache.write, so the file is
+    # deliberately in a form the writer would never produce.
+    key = cache._key("GET", url, params, None)
+    (tmp_path / "cache" / f"{key}.json").write_text(
+        '{"url": "https://example.test/corrupt"}', encoding="utf-8"
+    )
+
+    attempts = []
+
+    def fake_request(method, url, **kwargs):
+        attempts.append(method)
+        return FakeResponse(200, {"value": 1})
+
+    monkeypatch.setattr(clients.requests, "request", fake_request)
+
+    response = clients.get(url, clients.crossref_limiter, params=params)
+
+    assert response.status_code == 200
+    assert len(attempts) == 1
