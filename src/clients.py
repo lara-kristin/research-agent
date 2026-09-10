@@ -197,6 +197,12 @@ def request(
     A cache hit returns before the limiter is consulted. Pacing exists to stay
     within a limit on requests actually sent, and a request that is not sent
     consumes nothing, so waiting first would slow a run for no purpose.
+
+    use_cache governs reading only. A bypassed request still stores its
+    result, so forcing a live run refreshes what is held rather than leaving
+    an older entry in place to be served by the next cached run. Bypassing
+    the cache is a request for current data, and it would be perverse for that
+    to leave the cache staler than it found it.
     """
     if use_cache:
         cached = cache.read(method, url, kwargs.get("params"), kwargs.get("json"))
@@ -234,23 +240,22 @@ def request(
             f"{response.status_code} - {response.text}", retry_after=retry_after
         )
 
-    if use_cache:
-        # Stored after the retryable and quota checks above, so only a
-        # response that reached this point is a candidate. cache.write
-        # declines anything that is not a 200.
-        try:
-            cache.write(
-                method,
-                url,
-                kwargs.get("params"),
-                kwargs.get("json"),
-                response.status_code,
-                response.json(),
-            )
-        except ValueError:
-            # A 200 whose body is not JSON is not cacheable, and is not an
-            # error here: the caller decides what to make of it.
-            pass
+    # Written regardless of use_cache, which governs reading. Stored after the
+    # retryable and quota checks above, so only a response that reached this
+    # point is a candidate; cache.write declines anything that is not a 200.
+    try:
+        cache.write(
+            method,
+            url,
+            kwargs.get("params"),
+            kwargs.get("json"),
+            response.status_code,
+            response.json(),
+        )
+    except ValueError:
+        # A 200 whose body is not JSON is not cacheable, and is not an error
+        # here: the caller decides what to make of it.
+        pass
 
     # Every other outcome, success or terminal failure, is returned as-is for
     # the caller to interpret. Raising here would remove the caller's ability
