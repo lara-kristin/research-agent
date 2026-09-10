@@ -63,7 +63,9 @@ def _to_paper(record: dict) -> Paper:
     )
 
 
-def search(query: str, limit: int = 10, fields: str | None = None) -> list[Paper]:
+def search(
+    query: str, limit: int = 10, fields: str | None = None, use_cache: bool = True
+) -> list[Paper]:
     """
     Search Semantic Scholar and return the results as Paper objects.
 
@@ -91,6 +93,7 @@ def search(query: str, limit: int = 10, fields: str | None = None) -> list[Paper
         semantic_scholar_limiter,
         params={"query": query, "limit": limit, "fields": fields},
         headers={"x-api-key": API_KEY},
+        use_cache=use_cache,
     )
 
     # Retryable statuses are raised by the client before reaching here. What

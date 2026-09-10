@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def retrieve_for_plan(
-    sub_questions: list[SubQuestion], limit: int = 5
+    sub_questions: list[SubQuestion], limit: int = 5, use_cache: bool = True
 ) -> list[Paper]:
     """
     Retrieve evidence for every approved sub-question, reformulating once
@@ -70,7 +70,7 @@ def retrieve_for_plan(
     thin_coverage: list[int] = []
 
     for sub_question in sub_questions:
-        papers = retrieve_evidence(sub_question, limit=limit)
+        papers = retrieve_evidence(sub_question, limit=limit, use_cache=use_cache)
 
         # Assessed once and the result held. Calling the check again in a
         # later branch would issue a second identical log line, which would
@@ -79,8 +79,10 @@ def retrieve_for_plan(
         met = assess_threshold(papers)
 
         if not met and not sub_question.retried_once:
-            sub_question = reformulate_query(sub_question)
-            retried_papers = retrieve_evidence(sub_question, limit=limit)
+            sub_question = reformulate_query(sub_question, use_cache=use_cache)
+            retried_papers = retrieve_evidence(
+                sub_question, limit=limit, use_cache=use_cache
+            )
 
             # The reformulated query is kept only if it did better, judged on
             # usable records rather than the raw count. A retry returning more

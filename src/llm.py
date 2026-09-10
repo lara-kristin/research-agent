@@ -52,7 +52,9 @@ class LLMResponseError(Exception):
     """
 
 
-def generate_json(prompt: str, schema: dict, purpose: str = "request") -> object:
+def generate_json(
+    prompt: str, schema: dict, purpose: str = "request", use_cache: bool = True
+) -> object:
     """
     Send a prompt and return the parsed JSON the model produced.
 
@@ -81,6 +83,7 @@ def generate_json(prompt: str, schema: dict, purpose: str = "request") -> object
                 "responseSchema": schema,
             },
         },
+        use_cache=use_cache,
     )
 
     # Retryable statuses are raised by the client layer before reaching here.

@@ -77,7 +77,9 @@ Produce a new decomposition addressing that feedback."""
     return prompt
 
 
-def plan_research(question: str, feedback: str | None = None) -> list[SubQuestion]:
+def plan_research(
+    question: str, feedback: str | None = None, use_cache: bool = True
+) -> list[SubQuestion]:
     """
     Decompose a research question into sub-questions with search queries.
 
@@ -96,7 +98,9 @@ def plan_research(question: str, feedback: str | None = None) -> list[SubQuestio
         question,
     )
 
-    raw = generate_json(_plan_prompt(question, feedback), PLAN_SCHEMA, "decomposition")
+    raw = generate_json(
+        _plan_prompt(question, feedback), PLAN_SCHEMA, "decomposition", use_cache=use_cache
+    )
 
     sub_questions = [SubQuestion.model_validate(item) for item in raw]
 
@@ -118,7 +122,7 @@ def plan_research(question: str, feedback: str | None = None) -> list[SubQuestio
     return sub_questions
 
 
-def reformulate_query(sub_question: SubQuestion) -> SubQuestion:
+def reformulate_query(sub_question: SubQuestion, use_cache: bool = True) -> SubQuestion:
     """
     Produce a different search query for a sub-question that returned too
     little.
@@ -139,7 +143,7 @@ Query used: {sub_question.search_query}
 Provide one different search query for the same sub-question. Broaden the
 terms or use alternative vocabulary. Three to six keywords, not a sentence."""
 
-    raw = generate_json(prompt, QUERY_SCHEMA, "query reformulation")
+    raw = generate_json(prompt, QUERY_SCHEMA, "query reformulation", use_cache=use_cache)
     new_query = raw["search_query"]
 
     logger.info(

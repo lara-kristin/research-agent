@@ -33,7 +33,7 @@ from src.semantic_scholar import MissingAPIKeyError
 logger = logging.getLogger("src.main")
 
 
-def plan_with_review(question: str) -> list[SubQuestion]:
+def plan_with_review(question: str, use_cache: bool = True) -> list[SubQuestion]:
     """
     Decompose the question and revise until the researcher approves.
 
@@ -54,7 +54,7 @@ def plan_with_review(question: str) -> list[SubQuestion]:
     """
     feedback = None
     while True:
-        sub_questions = plan_research(question, feedback)
+        sub_questions = plan_research(question, feedback, use_cache=use_cache)
         decision, feedback = review_sub_questions(sub_questions)
 
         if decision is Decision.APPROVE:
@@ -78,16 +78,34 @@ def main() -> int:
         default=5,
         help="maximum records to retrieve per sub-question",
     )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="bypass the response cache and issue every request live",
+    )
     args = parser.parse_args()
 
     configure()
+
+    # Stated at the start of every run. A cached run and a live run must not be
+    # indistinguishable: a demonstration replaying stored answers while
+    # appearing to exercise the live services would misrepresent the system.
+    # Individual hits are logged as they occur; this line establishes which
+    # kind of run a reader is looking at before the first request is made.
+    if args.no_cache:
+        logger.info("Cache bypassed: every request will be issued live")
+    else:
+        logger.info(
+            "Response cache enabled; entries under 24 hours old will be reused. "
+            "Use --no-cache to force live requests"
+        )
 
     # The three failures below are the ones a user can act on: a missing
     # credential, and a service that stayed unavailable across every retry.
     # Anything else is a defect and should surface with its traceback rather
     # than be reported as though it were expected.
     try:
-        sub_questions = plan_with_review(args.query)
+        sub_questions = plan_with_review(args.query, use_cache=not args.no_cache)
     except MissingLLMKeyError as exc:
         logger.error("%s", exc)
         return 1
@@ -114,7 +132,9 @@ def main() -> int:
     )
 
     try:
-        papers = retrieve_for_plan(sub_questions, limit=args.limit)
+        papers = retrieve_for_plan(
+            sub_questions, limit=args.limit, use_cache=not args.no_cache
+        )
     except MissingAPIKeyError as exc:
         logger.error("%s", exc)
         return 1

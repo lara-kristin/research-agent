@@ -4,11 +4,14 @@ agent: both are deterministic concerns, which the design proposal assigns to
 the orchestrator's remit rather than to an agent's reasoning.
 """
 
+import json
 import logging
 import time
 
 import requests
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+
+from src import cache
 
 # __name__ resolves to this module's import path, so records from this file are
 # labelled src.clients. Naming loggers per module means a log line identifies
@@ -133,6 +136,32 @@ def _log_retry(retry_state) -> None:
     )
 
 
+class CachedResponse:
+    """
+    Stands in for a requests.Response when a cached body is returned.
+
+    Callers already branch on status_code and call json(), so presenting a
+    cached entry in that shape means the cache is invisible to them. Only
+    successful responses are cached, so the status is always 200; a failure is
+    never replayed.
+    """
+
+    status_code = 200
+
+    def __init__(self, body: object):
+        self._body = body
+
+    def json(self) -> object:
+        return self._body
+
+    def raise_for_status(self) -> None:
+        """Never raises: a cached entry is by definition a success."""
+
+    @property
+    def text(self) -> str:
+        return json.dumps(self._body)
+
+
 # Retry wraps a function that calls the limiter, so every attempt is paced.
 # The reverse arrangement would let retries burst past the throttle, which is
 # the behaviour that produces a 429 in the first place.
@@ -146,7 +175,13 @@ def _log_retry(retry_state) -> None:
     reraise=True,
     before_sleep=_log_retry,
 )
-def request(method: str, url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
+def request(
+    method: str,
+    url: str,
+    limiter: RateLimiter,
+    use_cache: bool = True,
+    **kwargs,
+) -> requests.Response | CachedResponse:
     """
     Issue a paced request, retrying only failures a later attempt could resolve.
 
@@ -158,7 +193,16 @@ def request(method: str, url: str, limiter: RateLimiter, **kwargs) -> requests.R
     Method is a parameter rather than there being one decorated function per
     verb, so that a change to the retry policy cannot apply to some callers and
     not others.
+
+    A cache hit returns before the limiter is consulted. Pacing exists to stay
+    within a limit on requests actually sent, and a request that is not sent
+    consumes nothing, so waiting first would slow a run for no purpose.
     """
+    if use_cache:
+        cached = cache.read(method, url, kwargs.get("params"), kwargs.get("json"))
+        if cached is not None:
+            return CachedResponse(cached)
+
     limiter.wait()
 
     # 30 seconds rather than 10: a successful response was observed taking 8
@@ -190,18 +234,36 @@ def request(method: str, url: str, limiter: RateLimiter, **kwargs) -> requests.R
             f"{response.status_code} - {response.text}", retry_after=retry_after
         )
 
+    if use_cache:
+        # Stored after the retryable and quota checks above, so only a
+        # response that reached this point is a candidate. cache.write
+        # declines anything that is not a 200.
+        try:
+            cache.write(
+                method,
+                url,
+                kwargs.get("params"),
+                kwargs.get("json"),
+                response.status_code,
+                response.json(),
+            )
+        except ValueError:
+            # A 200 whose body is not JSON is not cacheable, and is not an
+            # error here: the caller decides what to make of it.
+            pass
+
     # Every other outcome, success or terminal failure, is returned as-is for
     # the caller to interpret. Raising here would remove the caller's ability
     # to distinguish a 403 from a 200, which stage 3 depends on.
     return response
 
 
-def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
-    """Paced, retrying GET."""
+def get(url: str, limiter: RateLimiter, **kwargs) -> requests.Response | CachedResponse:
+    """Paced, retrying, cacheable GET."""
     return request("GET", url, limiter, **kwargs)
 
 
-def post(url: str, limiter: RateLimiter, **kwargs) -> requests.Response:
+def post(url: str, limiter: RateLimiter, **kwargs) -> requests.Response | CachedResponse:
     """
     Paced, retrying POST.
 

@@ -27,7 +27,9 @@ logger = logging.getLogger(__name__)
 RECORD_THRESHOLD = 3
 
 
-def retrieve_evidence(sub_question: SubQuestion, limit: int = 5) -> list[Paper]:
+def retrieve_evidence(
+    sub_question: SubQuestion, limit: int = 5, use_cache: bool = True
+) -> list[Paper]:
     """
     Search for one sub-question and return the papers found.
 
@@ -39,7 +41,7 @@ def retrieve_evidence(sub_question: SubQuestion, limit: int = 5) -> list[Paper]:
         sub_question.id,
         sub_question.search_query,
     )
-    return search(sub_question.search_query, limit=limit)
+    return search(sub_question.search_query, limit=limit, use_cache=use_cache)
 
 
 def count_usable(papers: list[Paper]) -> int:
