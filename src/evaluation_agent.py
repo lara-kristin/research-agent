@@ -106,9 +106,10 @@ def evaluate_evidence(
     different aspects need different evidence, and a single score per paper
     could not show which aspect a paper serves.
 
-    Papers without abstracts are excluded from scoring and reported. They are
-    not discarded: the researcher sees them at the evidence checkpoint, where
-    a human can judge a title in a way this system should not.
+    Papers without abstracts are excluded from scoring and reported. They
+    remain visible to the researcher at the evidence checkpoint and may inform
+    a scope decision, but they are not eligible for automated selection or
+    synthesis, because there is no abstract on which to ground a judgement.
     """
     assessable = _assessable(papers)
 

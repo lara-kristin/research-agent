@@ -209,21 +209,22 @@ def test_original_result_kept_when_reformulation_finds_no_more(monkeypatch):
     assert len(papers) == 2
 
 
-def test_a_reformulated_query_is_recorded_on_the_sub_question(monkeypatch):
+def test_a_worse_reformulation_leaves_the_original_query_recorded(monkeypatch):
     """
-    The retry flag must reach the caller, not just the loop variable.
+    The query recorded on a sub-question must be the one that produced the
+    evidence kept beneath it.
 
-    An earlier version rebound the loop variable, so retried_once was set on a
-    copy that was immediately discarded. Nothing downstream could see it: the
-    one-retry guard could never fire, and the brief could not report which
-    aspects had been searched under a query other than the approved one. The
-    behaviour was correct in every run only because each sub-question is
-    visited once.
+    An earlier version wrote the reformulated sub-question back
+    unconditionally while keeping the original papers when the retry did
+    worse. The brief would then list a query that did not produce the evidence
+    under it, and the limitation derived from the flag asserted that the
+    evidence came from the reformulated query, which was false.
     """
+    results = [_papers(2), _papers(1)]
     monkeypatch.setattr(
         orchestrator,
         "retrieve_evidence",
-        lambda sq, limit=5, use_cache=True: _papers(1),
+        lambda sq, limit=5, use_cache=True: results.pop(0),
     )
     monkeypatch.setattr(
         orchestrator,
@@ -233,8 +234,37 @@ def test_a_reformulated_query_is_recorded_on_the_sub_question(monkeypatch):
         ),
     )
 
-    sub_questions = [_approved(1)]
-    orchestrator.retrieve_for_plan(sub_questions)
+    sub_questions = [_approved(1, query="original")]
+    papers = orchestrator.retrieve_for_plan(sub_questions)
 
+    assert len(papers) == 2
+    assert sub_questions[0].search_query == "original"
+    # The retry still happened, so the limit must still hold against it.
     assert sub_questions[0].retried_once is True
+
+
+def test_a_better_reformulation_records_the_reformulated_query(monkeypatch):
+    """
+    The counterpart: when the retry does better its results are kept, so its
+    query is what produced them and is what the brief must show.
+    """
+    results = [_papers(1), _papers(3)]
+    monkeypatch.setattr(
+        orchestrator,
+        "retrieve_evidence",
+        lambda sq, limit=5, use_cache=True: results.pop(0),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "reformulate_query",
+        lambda sq, use_cache=True: sq.model_copy(
+            update={"search_query": "broader", "retried_once": True}
+        ),
+    )
+
+    sub_questions = [_approved(1, query="original")]
+    papers = orchestrator.retrieve_for_plan(sub_questions)
+
+    assert len(papers) == 3
     assert sub_questions[0].search_query == "broader"
+    assert sub_questions[0].retried_once is True

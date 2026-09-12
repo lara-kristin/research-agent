@@ -105,19 +105,22 @@ def _limitations(
         "indexes will not appear.",
     ]
 
-    # A reformulated sub-question was searched under a query the researcher did
-    # not approve, because the approved one returned too little. The evidence
-    # for that aspect therefore answers a broader question than the one shown
-    # above it, and a reader comparing the two would otherwise have no way to
-    # know.
+    # A retry was attempted for these aspects because the approved query
+    # returned too little. The limitation reports that a reformulation
+    # occurred, not that its results were used: the reformulated query is kept
+    # only when it retrieved more, so asserting that the evidence came from it
+    # would be false whenever the original result was retained. The query
+    # shown for each sub-question above is always the one that produced the
+    # evidence beneath it.
     reformulated = [sq.id for sq in sub_questions if sq.retried_once]
     if reformulated:
         ids = ", ".join(str(i) for i in reformulated)
         limitations.append(
-            f"Sub-question(s) {ids} returned too few usable records under the "
-            "approved query, so the search was repeated with a reformulated "
-            "one. Evidence for those aspects comes from the reformulated "
-            "query, which is broader than the question the researcher approved."
+            f"The approved query for sub-question(s) {ids} returned too few "
+            "usable records, so a reformulated query was tried. The query "
+            "listed for each sub-question above is the one whose results were "
+            "retained, and coverage of those aspects is thinner than of the "
+            "others."
         )
 
     unverified = [p for p in papers if not p.doi_verified]

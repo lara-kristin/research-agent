@@ -95,30 +95,35 @@ def retrieve_for_plan(
         met = assess_threshold(papers)
 
         if not met and not sub_question.retried_once:
-            sub_question = reformulate_query(sub_question, use_cache=use_cache)
-
-            # Written back into the list the caller holds. Rebinding the loop
-            # variable alone left retried_once set on a copy that was then
-            # discarded, so the flag never reached the caller: the one-retry
-            # guard above could not fire, and the brief could not report which
-            # aspects had been searched under a reformulated query.
-            sub_questions[index] = sub_question
-
+            reformulated = reformulate_query(sub_question, use_cache=use_cache)
             retried_papers = retrieve_evidence(
-                sub_question, limit=limit, use_cache=use_cache
+                reformulated, limit=limit, use_cache=use_cache
             )
 
             # The reformulated query is kept only if it did better, judged on
             # usable records rather than the raw count. A retry returning more
             # records but fewer abstracts is not an improvement, and comparing
             # totals would treat it as one.
+            #
+            # The query recorded on the sub-question follows the evidence. If
+            # the original result is retained, the original query is retained
+            # with it: recording the reformulated query alongside evidence it
+            # did not produce would make the brief state that an aspect was
+            # searched under a query it was not. retried_once is set either
+            # way, because the retry did happen and the one-retry limit must
+            # still hold.
             if count_usable(retried_papers) > count_usable(papers):
                 papers = retried_papers
+                sub_questions[index] = reformulated
                 met = assess_threshold(papers)
             else:
                 logger.info(
-                    "Reformulation for sub-question %d returned no more records; keeping the original result",
+                    "Reformulation for sub-question %d returned no more usable "
+                    "records; keeping the original query and its results",
                     sub_question.id,
+                )
+                sub_questions[index] = sub_question.model_copy(
+                    update={"retried_once": True}
                 )
 
         if not met:
