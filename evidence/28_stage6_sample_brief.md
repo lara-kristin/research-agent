@@ -2,36 +2,36 @@
 
 ## Sub-questions searched
 
-1. What are the common communication bottlenecks and coordination failures in LLM-based multi-agent systems?
-   - search query: `llm multi-agent communication coordination failure breakdown`
-2. How do cascading errors and hallucination propagation affect the reliability of collaborative LLM frameworks?
-   - search query: `llm multi-agent hallucination cascading error propagation reliability`
-3. What security vulnerabilities and adversarial failure modes emerge in decentralized LLM agent interactions?
-   - search query: `llm multi-agent security vulnerability adversarial attack failure`
+1. What are the common communication breakdown and coordination failure modes in LLM-based multi-agent systems?
+   - search query: `llm multi agent communication failure coordination breakdown`
+2. How do error propagation and cascading failure mechanisms affect the reliability of collaborative large language model agents?
+   - search query: `error propagation cascading failures llm multi agent reliability`
+3. What are the security vulnerabilities, emergent malicious behaviors, and alignment failures observed in multi-agent LLM frameworks?
+   - search query: `security vulnerabilities emergent malicious behavior alignment failures llm agents`
 
 ## Themes across the evidence
 
-- Vulnerability of inter-agent communication and message passing to adversarial attacks and manipulation.
-- Propagation, amplification, and mitigation of hallucinations and errors across sequential multi-agent interactions.
-- The role of system topology and decentralized structures in influencing coordination resilience, scalability, and security.
-- Language bias, strategic framing effects, and behavioral variations driven by communication in collaborative frameworks.
+- Vulnerability of LLM-based multi-agent and GUI systems to communication attacks, prompt injections, and stealthy malicious behaviors
+- Challenges in system-level reliability, failure localization, and error attribution across multi-step interaction trajectories
+- Trade-offs and failures associated with current safety defenses, including defense training breaking agent competence and inducing cascading failures
+- Coordination structures and communication frameworks impacting agent cooperation, scalability, and bias
 
 ## Gaps this evidence does not address
 
-- The long-term evolutionary drift of agent behaviors and alignment over extended, multi-session autonomous operations.
-- The impact of heterogeneous agent mixtures involving diverse proprietary architectures and competing objective functions on system-wide failure modes.
+- Long-term economic or multi-organizational adoption barriers beyond basic privacy and proprietary knowledge concerns
+- The direct measurement of human psychological or behavioral adaptation over extended periods of interacting with vulnerable GUI agents
 
-## Selected papers (7)
+## Selected papers (8)
 
-### [1.00] Hallucination Cascade: Analyzing Error Propagation in Multi-Agent LLM Systems
+### [1.00] When Agents Go Rogue: Activation-Based Detection of Malicious Behaviors in Multi-Agent Systems
 
-**Authors:** Saeid Jamshidi, Arghavan Moradi Dakhel, Kawser Wazed Nafi, F. Khomh
+**Authors:** Haowen Xu, Xue Tan, Lei Ma, Zhihao Zhang, Chao Wang, Qingze Wang, Ping Chen, Jun Dai, Xiaoyan Sun
 **Year:** 2026
-**DOI:** 10.48550/arxiv.2606.07937
+**DOI:** 10.48550/arxiv.2607.06807
 **Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
-**Addresses sub-question(s):** 2
+**Addresses sub-question(s):** 1, 3
 
-**Summary (generated from the abstract):** This paper analyzes hallucination dynamics in multi-agent cascades by tracking claim-level factual inconsistencies across sequential interactions. Results across 500 cascade experiments show that deeper cascades can reduce hallucination scores while revealing a trade-off between hallucination suppression and factual preservation. It also evaluates reliability-efficiency trade-offs across different LLM backbones and domain complexities.
+**Summary (generated from the abstract):** This work proposes AcMAS, an activation-based framework that detects stealthy malicious behaviors in multi-agent systems by analyzing internal reasoning states in the activation space of local agents. AcMAS operates without relying on explicit interaction graphs and provides critical signals to restore the functionality of compromised agents rather than isolating them.
 
 ### [0.90] Red-Teaming LLM Multi-Agent Systems via Communication Attacks
 
@@ -39,49 +39,19 @@
 **Year:** 2025
 **DOI:** 10.48550/arxiv.2502.14847
 **Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
-**Addresses sub-question(s):** 3
+**Addresses sub-question(s):** 1, 3
 
-**Summary (generated from the abstract):** This paper introduces the Agent-in-the-Middle attack, which exploits communication mechanisms in LLM multi-agent systems by intercepting and manipulating messages. It demonstrates that adversaries can compromise entire systems through message manipulation rather than compromising individual agents. The study highlights communication-based vulnerabilities across various frameworks and communication structures.
+**Summary (generated from the abstract):** This paper introduces Agent-in-the-Middle (AiTM), a novel attack that exploits communication mechanisms in LLM-based multi-agent systems by intercepting and manipulating inter-agent messages. It demonstrates that adversaries can compromise entire systems with limited control by utilizing an LLM-powered adversarial agent with a reflection mechanism to generate malicious instructions.
 
-### [0.90] AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems
+### [0.90] The Autonomy Tax: Defense Training Breaks LLM Agents
 
-**Authors:** Yingxuan Yang, Huacan Chai, Shuai Shao, Yuanyi Song, Siyuan Qi, Renting Rui, Weinan Zhang
-**Year:** 2025
-**DOI:** 10.48550/arxiv.2504.00587
+**Authors:** Li Li, Yue Zhao
+**Year:** 2026
+**DOI:** 10.48550/arxiv.2603.19423
 **Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
-**Addresses sub-question(s):** 1
+**Addresses sub-question(s):** 1, 2, 3
 
-**Summary (generated from the abstract):** This paper proposes AgentNet, a decentralized RAG-based framework addressing centralized coordination limitations such as scalability bottlenecks and single points of failure. The framework allows agents to adjust connectivity and route tasks dynamically in a Directed Acyclic Graph based on local expertise. It demonstrates higher task accuracy and fault-tolerant collaboration without relying on a central orchestrator.
-
-### [0.90] GUARDIAN: Safeguarding LLM Multi-Agent Collaborations with Temporal Graph Modeling
-
-**Authors:** Jialong Zhou, Lichao Wang, Xiao Yang
-**Year:** 2025
-**DOI:** 10.48550/arxiv.2505.19234
-**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
-**Addresses sub-question(s):** 2
-
-**Summary (generated from the abstract):** This paper presents GUARDIAN, a unified method for detecting and mitigating safety concerns like hallucination amplification and error propagation in multi-agent collaborations. By modeling collaboration as a discrete-time temporal attributed graph, the method captures error propagation dynamics to identify anomalous nodes and edges. It uses an encoder-decoder architecture and graph abstraction to safeguard interactions effectively.
-
-### [0.90] G-Safeguard: A Topology-Guided Security Lens and Treatment on LLM-based Multi-agent Systems
-
-**Authors:** Shilong Wang, Gui-Min Zhang, Miao Yu, Guancheng Wan, Fanci Meng, Chongye Guo, Kun Wang, Yang Wang
-**Year:** 2025
-**DOI:** 10.48550/arxiv.2502.11127
-**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
-**Addresses sub-question(s):** 3
-
-**Summary (generated from the abstract):** This paper introduces G-Safeguard, a topology-guided security lens and treatment that uses graph neural networks to detect anomalies on multi-agent utterance graphs. It employs topological intervention to remediate vulnerabilities such as adversarial attacks, misinformation propagation, and unintended behaviors. Experiments show the method recovers significant performance under prompt injection across diverse LLM backbones.
-
-### [0.90] MedSentry: Understanding and Mitigating Safety Risks in Medical LLM Multi-Agent Systems
-
-**Authors:** Kai Chen, Taihang Zhen, He-Wei Wang, Kai Liu, Xinfeng Li, Jing Huo, Tianpei Yang, Jinfeng Xu, Wei Dong, Yang Gao
-**Year:** 2025
-**DOI:** 10.48550/arxiv.2505.20824
-**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
-**Addresses sub-question(s):** 3
-
-**Summary (generated from the abstract):** This paper introduces MedSentry to analyze how different multi-agent topologies handle information contamination and robust decision-making against adversarial prompts and dark-personality agents. The findings reveal that architectures like SharedPool are highly susceptible, whereas decentralized topologies exhibit greater resilience due to redundancy and isolation. It proposes a personality-scale detection and correction mechanism to restore system safety.
+**Summary (generated from the abstract):** The paper investigates the capability-alignment paradox where defense training intended to protect LLM agents against prompt injection systematically harms agent competence. Evaluating defended models across multi-step tasks uncovers three systematic biases: agent incompetence bias, cascade amplification bias where early failures propagate through retry loops, and trigger bias.
 
 ### [0.80] Strategic Communication and Language Bias in Multi-Agent LLM Coordination
 
@@ -91,10 +61,50 @@
 **Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
 **Addresses sub-question(s):** 1
 
-**Summary (generated from the abstract):** This paper investigates how linguistic framing and strategic communication affect agent behavior and cooperation in multi-agent LLM coordination. Using one-shot and repeated games, the authors find that communication significantly influences agent behavior, though its impact varies by language, personality, and game structure. The findings highlight the dual role of communication in fostering coordination while reinforcing biases.
+**Summary (generated from the abstract):** The paper explores how linguistic framing and strategic communication affect cooperation in multi-agent LLM scenarios using FAIRGAME simulations with models like GPT-4o and Llama 4 Maverick. The findings reveal that communication significantly influences agent behavior, acting in a dual role to both foster coordination and reinforce language-driven biases.
+
+### [0.80] VerifyMAS: Hypothesis Verification for Failure Attribution in LLM Multi-Agent Systems
+
+**Authors:** Hezhe Qiao, Hanghang Tong, Ee-Peng Lim, Bing Liu, Guansong Pang
+**Year:** 2026
+**DOI:** 10.48550/arxiv.2605.17467
+**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
+**Addresses sub-question(s):** 1
+
+**Summary (generated from the abstract):** The paper proposes VerifyMAS, a hypothesis verification framework designed to automatically attribute failures in multi-agent systems by verifying hypotheses against full interaction trajectories. This error-first approach captures global failure patterns such as cross-step inconsistencies and coordination errors while reducing the combinatorial search space for agent localization.
+
+### [0.80] The Obvious Invisible Threat: LLM-Powered GUI Agents' Vulnerability to Fine-Print Injections
+
+**Authors:** Chaoran Chen, Zhiping Zhang, Bingcan Guo, Shang Ma, Ibrahim Khalilov, S. Gebreegziabher, Yanfang Ye, Ziang Xiao, Yaxing Yao, Tian-Shi Li, Toby Jia-Jun Li
+**Year:** 2025
+**DOI:** 10.48550/arxiv.2504.11281
+**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
+**Addresses sub-question(s):** 3
+
+**Summary (generated from the abstract):** This paper characterizes six types of attacks where adversaries inject malicious content into GUIs to alter agent behaviors or induce unintended disclosures of private information. An experimental study with state-of-the-art GUI agents and adversarial webpages shows high vulnerability to contextually embedded threats and highlights the insufficiency of simple human oversight.
+
+### [0.70] AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems
+
+**Authors:** Yingxuan Yang, Huacan Chai, Shuai Shao, Yuanyi Song, Siyuan Qi, Renting Rui, Weinan Zhang
+**Year:** 2025
+**DOI:** 10.48550/arxiv.2504.00587
+**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
+**Addresses sub-question(s):** 1
+
+**Summary (generated from the abstract):** This work proposes AgentNet, a decentralized, RAG-based framework allowing LLM-based agents to autonomously specialize, evolve, and collaborate in a dynamically structured Directed Acyclic Graph. By eliminating central orchestration and using a retrieval-based memory system, it addresses scalability bottlenecks, privacy concerns, and single points of failure while achieving higher task accuracy.
+
+### [0.70] DoVer: Intervention-Driven Auto Debugging for LLM Multi-Agent Systems
+
+**Authors:** Ming-Jie Ma, Jue Zhang, Fangkai Yang, Yu Kang, Qingwei Lin, S. Rajmohan, Dongmei Zhang
+**Year:** 2025
+**DOI:** 10.48550/arxiv.2512.06749
+**Verification:** not verified (arXiv preprint, registered with DataCite not Crossref)
+**Addresses sub-question(s):** 1
+
+**Summary (generated from the abstract):** This study introduces DoVer, an intervention-driven debugging framework that tackles the limits of log-only debugging by pairing hypothesis generation with active verification through targeted interventions. Evaluated on outcome-oriented task success across multiple frameworks and datasets, DoVer recovers failed trials and validates or refutes failure hypotheses.
 
 ## Limitations of this search
 
 - Summaries derive from abstracts alone. Full texts were not retrieved, so methods, results and limitations reported only in the body of a paper are not represented here.
 - One literature source was searched. Records held only by other indexes will not appear.
-- 7 of 7 selected papers could not be independently verified against Crossref, of which 7 are preprints registered with a different agency rather than doubtful records. Each paper states its own reason.
+- 8 of 8 selected papers could not be independently verified against Crossref, of which 8 are preprints registered with a different agency rather than doubtful records. Each paper states its own reason.

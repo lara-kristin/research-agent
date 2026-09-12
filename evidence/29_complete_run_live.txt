@@ -1,40 +1,43 @@
-﻿2026-09-12 21:52:26,989 INFO     src.main | Cache bypassed: every request will be issued live
-2026-09-12 21:52:26,990 INFO     src.planning_agent | Planning decomposition for: 'What are the failure modes of LLM-based multi-agent systems?'
-2026-09-12 21:52:26,990 INFO     src.llm | LLM decomposition: sending prompt of 445 characters
-2026-09-12 21:52:28,698 INFO     src.planning_agent |   1. What are the common communication bottlenecks and coordination failures in LLM-based multi-agent systems? [query: llm multi-agent communication coordination failure breakdown]
-2026-09-12 21:52:28,699 INFO     src.planning_agent |   2. How do cascading errors and hallucination propagation affect the reliability of collaborative LLM frameworks? [query: llm multi-agent hallucination cascading error propagation reliability]
-2026-09-12 21:52:28,701 INFO     src.planning_agent |   3. What security vulnerabilities and adversarial failure modes emerge in decentralized LLM agent interactions? [query: llm multi-agent security vulnerability adversarial attack failure]
-2026-09-12 21:52:55,325 INFO     src.interface | Researcher approved 3 sub-questions
-2026-09-12 21:52:55,327 INFO     src.retrieval_agent | Retrieving for sub-question 1 with query 'llm multi-agent communication coordination failure breakdown'
-2026-09-12 21:52:55,327 INFO     src.semantic_scholar | Searching Semantic Scholar: query='llm multi-agent communication coordination failure breakdown' limit=3
-2026-09-12 21:52:56,455 INFO     src.semantic_scholar | Retrieved 3 of 644 matching records
-2026-09-12 21:52:56,462 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
-2026-09-12 21:52:56,463 INFO     src.retrieval_agent | Retrieving for sub-question 2 with query 'llm multi-agent hallucination cascading error propagation reliability'
-2026-09-12 21:52:56,464 INFO     src.semantic_scholar | Searching Semantic Scholar: query='llm multi-agent hallucination cascading error propagation reliability' limit=3
-2026-09-12 21:52:57,124 INFO     src.semantic_scholar | Retrieved 3 of 104 matching records
-2026-09-12 21:52:57,126 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
-2026-09-12 21:52:57,126 INFO     src.retrieval_agent | Retrieving for sub-question 3 with query 'llm multi-agent security vulnerability adversarial attack failure'
-2026-09-12 21:52:57,127 INFO     src.semantic_scholar | Searching Semantic Scholar: query='llm multi-agent security vulnerability adversarial attack failure' limit=3
-2026-09-12 21:52:58,636 INFO     src.semantic_scholar | Retrieved 3 of 735 matching records
-2026-09-12 21:52:58,648 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
-2026-09-12 21:52:58,652 INFO     src.orchestrator | Retrieval complete: 9 records across 3 sub-questions
-2026-09-12 21:52:58,673 INFO     src.orchestrator | Deduplication: 9 records in, 8 out, 1 duplicates removed
-2026-09-12 21:52:59,112 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2502.14847
-2026-09-12 21:53:00,075 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2508.00032
-2026-09-12 21:53:01,072 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2504.00587
-2026-09-12 21:53:02,076 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2505.19234
-2026-09-12 21:53:03,055 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2606.07937
-2026-09-12 21:53:03,056 INFO     src.crossref | No DOI to verify: 'The Hallucination Snowball: Modeling Error Propagation as State Transitions in Multi-Agent LLM Pipelines'
-2026-09-12 21:53:04,103 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2502.11127
-2026-09-12 21:53:05,130 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2505.20824
-2026-09-12 21:53:05,133 INFO     src.orchestrator | Validation: 0 of 8 records verified against Crossref
-2026-09-12 21:53:05,134 INFO     src.evaluation_agent | Assessing 8 papers against 3 sub-questions in one request
-2026-09-12 21:53:05,135 INFO     src.llm | LLM relevance assessment: sending prompt of 12435 characters
-2026-09-12 21:53:10,491 INFO     src.evaluation_agent | Assessment complete: 8 of 24 pairings at or above 0.60
-2026-09-12 21:56:08,137 INFO     src.interface | Researcher refined the selection: 7 kept, 1 removed (The Hallucination Snowball: Modeling Error Propagation as State Transitions in Multi-Agent LLM Pipelines)
-2026-09-12 21:56:08,138 INFO     src.orchestrator | Proceeding with 7 approved paper(s)
-2026-09-12 21:56:08,138 INFO     src.synthesis | Synthesising a brief from 7 approved paper(s)
-2026-09-12 21:56:08,139 INFO     src.llm | LLM synthesis: sending prompt of 10809 characters
-2026-09-12 21:56:11,726 INFO     src.synthesis | Brief assembled: 7 summaries, 4 themes, 2 gaps, 3 limitations
-2026-09-12 21:56:11,732 INFO     src.orchestrator | Saved brief with 7 paper(s) to output\brief_20260912_215611.md and output\brief_20260912_215611.json
-2026-09-12 21:56:11,736 INFO     src.main | Done. output\brief_20260912_215611.md and output\brief_20260912_215611.json
+﻿2026-09-12 22:11:04,923 INFO     src.main | Cache bypassed: every request will be issued live
+2026-09-12 22:11:04,923 INFO     src.planning_agent | Planning decomposition for: 'What are the failure modes of LLM-based multi-agent systems?'
+2026-09-12 22:11:04,924 INFO     src.llm | LLM decomposition: sending prompt of 445 characters
+2026-09-12 22:11:06,398 INFO     src.planning_agent |   1. What are the common communication breakdown and coordination failure modes in LLM-based multi-agent systems? [query: llm multi agent communication failure coordination breakdown]
+2026-09-12 22:11:06,405 INFO     src.planning_agent |   2. How do error propagation and cascading failure mechanisms affect the reliability of collaborative large language model agents? [query: error propagation cascading failures llm multi agent reliability]
+2026-09-12 22:11:06,405 INFO     src.planning_agent |   3. What are the security vulnerabilities, emergent malicious behaviors, and alignment failures observed in multi-agent LLM frameworks? [query: security vulnerabilities emergent malicious behavior alignment failures llm agents]
+2026-09-12 22:11:23,578 INFO     src.interface | Researcher approved 3 sub-questions
+2026-09-12 22:11:23,579 INFO     src.retrieval_agent | Retrieving for sub-question 1 with query 'llm multi agent communication failure coordination breakdown'
+2026-09-12 22:11:23,579 INFO     src.semantic_scholar | Searching Semantic Scholar: query='llm multi agent communication failure coordination breakdown' limit=3
+2026-09-12 22:11:24,725 INFO     src.semantic_scholar | Retrieved 3 of 644 matching records
+2026-09-12 22:11:24,728 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
+2026-09-12 22:11:24,729 INFO     src.retrieval_agent | Retrieving for sub-question 2 with query 'error propagation cascading failures llm multi agent reliability'
+2026-09-12 22:11:24,729 INFO     src.semantic_scholar | Searching Semantic Scholar: query='error propagation cascading failures llm multi agent reliability' limit=3
+2026-09-12 22:11:25,417 INFO     src.semantic_scholar | Retrieved 3 of 141 matching records
+2026-09-12 22:11:25,420 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
+2026-09-12 22:11:25,420 INFO     src.retrieval_agent | Retrieving for sub-question 3 with query 'security vulnerabilities emergent malicious behavior alignment failures llm agents'
+2026-09-12 22:11:25,421 INFO     src.semantic_scholar | Searching Semantic Scholar: query='security vulnerabilities emergent malicious behavior alignment failures llm agents' limit=3
+2026-09-12 22:11:26,146 WARNING  src.clients | Attempt 1 failed (429 - {"message": "Too Many Requests. Please wait and try again or apply for a key for higher rate limits. https://www.semanticscholar.org/product/api#api-key-form", "code": "429"}), retrying in 1.0s
+2026-09-12 22:11:27,562 WARNING  src.clients | Attempt 2 failed (429 - {"message": "Too Many Requests. Please wait and try again or apply for a key for higher rate limits. https://www.semanticscholar.org/product/api#api-key-form", "code": "429"}), retrying in 2.0s
+2026-09-12 22:11:30,260 INFO     src.semantic_scholar | Retrieved 3 of 12 matching records
+2026-09-12 22:11:30,273 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
+2026-09-12 22:11:30,275 INFO     src.orchestrator | Retrieval complete: 9 records across 3 sub-questions
+2026-09-12 22:11:30,276 INFO     src.orchestrator | Deduplication: 9 records in, 9 out, 0 duplicates removed
+2026-09-12 22:11:31,240 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2502.14847
+2026-09-12 22:11:31,607 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2508.00032
+2026-09-12 22:11:32,625 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2504.00587
+2026-09-12 22:11:32,626 INFO     src.crossref | No DOI to verify: 'PropUQ-MAS: Propagation-Aware Uncertainty Quantification for LLM Multi-Agent Systems'
+2026-09-12 22:11:33,666 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2605.17467
+2026-09-12 22:11:34,622 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2512.06749
+2026-09-12 22:11:35,684 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2603.19423
+2026-09-12 22:11:36,626 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2607.06807
+2026-09-12 22:11:37,743 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2504.11281
+2026-09-12 22:11:37,745 INFO     src.orchestrator | Validation: 0 of 9 records verified against Crossref
+2026-09-12 22:11:37,745 INFO     src.evaluation_agent | Assessing 9 papers against 3 sub-questions in one request
+2026-09-12 22:11:37,745 INFO     src.llm | LLM relevance assessment: sending prompt of 14320 characters
+2026-09-12 22:11:43,775 INFO     src.evaluation_agent | Assessment complete: 13 of 27 pairings at or above 0.60
+2026-09-12 22:12:47,638 INFO     src.interface | Researcher refined the selection: 8 kept, 1 removed (PropUQ-MAS: Propagation-Aware Uncertainty Quantification for LLM Multi-Agent Systems)
+2026-09-12 22:12:47,639 INFO     src.orchestrator | Proceeding with 8 approved paper(s)
+2026-09-12 22:12:47,639 INFO     src.synthesis | Synthesising a brief from 8 approved paper(s)
+2026-09-12 22:12:47,640 INFO     src.llm | LLM synthesis: sending prompt of 13479 characters
+2026-09-12 22:12:51,667 INFO     src.synthesis | Brief assembled: 8 summaries, 4 themes, 2 gaps, 3 limitations
+2026-09-12 22:12:51,713 INFO     src.orchestrator | Saved brief with 8 paper(s) to output\brief_20260912_221251.md and output\brief_20260912_221251.json
+2026-09-12 22:12:51,716 INFO     src.main | Done. output\brief_20260912_221251.md and output\brief_20260912_221251.json
