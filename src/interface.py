@@ -238,7 +238,20 @@ def review_evidence(
         for number, (paper, _, _) in enumerate(rows, start=1)
         if number not in drop
     ]
+    removed = [
+        paper.title
+        for number, (paper, _, _) in enumerate(rows, start=1)
+        if number in drop
+    ]
+
+    # The removed titles are logged, not only the count. A refinement is a
+    # judgement the system could not make for itself, so the log should record
+    # what was decided rather than how much: a count leaves the decision
+    # unauditable afterwards, which defeats the purpose of logging it.
     logger.info(
-        "Researcher refined the selection: %d kept, %d removed", len(kept), len(drop)
+        "Researcher refined the selection: %d kept, %d removed%s",
+        len(kept),
+        len(removed),
+        f" ({'; '.join(removed)})" if removed else "",
     )
     return decision, kept, None

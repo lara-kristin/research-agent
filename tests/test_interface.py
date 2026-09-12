@@ -209,3 +209,20 @@ def test_a_paper_selected_for_several_aspects_appears_once(answers):
     _, kept, _ = interface.review_evidence(assessments, papers)
 
     assert kept == []
+
+
+def test_removed_titles_are_logged_not_only_counted(answers, caplog):
+    """
+    A refinement is a judgement the system could not make for itself, so the
+    log must record what was decided rather than how much. A count leaves the
+    decision unauditable: a reader can see that a paper was removed but not
+    which, and the brief that results shows only what survived.
+    """
+    answers.extend(["refine", "2"])
+    papers = [_paper("Kept"), _paper("Removed")]
+    assessments = [_assessment("Kept", 0.9), _assessment("Removed", 0.7)]
+
+    with caplog.at_level("INFO"):
+        interface.review_evidence(assessments, papers)
+
+    assert "Removed" in caplog.text
