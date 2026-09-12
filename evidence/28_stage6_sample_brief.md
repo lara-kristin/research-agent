@@ -97,4 +97,4 @@
 
 - Summaries derive from abstracts alone. Full texts were not retrieved, so methods, results and limitations reported only in the body of a paper are not represented here.
 - One literature source was searched. Records held only by other indexes will not appear.
-- 7 of 7 selected papers could not be independently verified against Crossref. Most are preprints registered with a different agency rather than doubtful records; each paper states its own reason.
+- 7 of 7 selected papers could not be independently verified against Crossref, of which 7 are preprints registered with a different agency rather than doubtful records. Each paper states its own reason.

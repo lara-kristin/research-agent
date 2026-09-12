@@ -125,11 +125,21 @@ def _limitations(
 
     unverified = [p for p in papers if not p.doi_verified]
     if unverified:
+        # Counted rather than described as "most". A hedge stays true whatever
+        # the proportions and therefore says nothing about this run, which is
+        # the opposite of what these limitations are for. It also hides the
+        # records that are unverified for some other reason, such as carrying
+        # no DOI at all, by folding them into a majority claim about preprints.
+        preprints = sum(
+            1
+            for p in unverified
+            if p.verification_note and "preprint" in p.verification_note
+        )
         limitations.append(
             f"{len(unverified)} of {len(papers)} selected papers could not be "
-            "independently verified against Crossref. Most are preprints "
-            "registered with a different agency rather than doubtful records; "
-            "each paper states its own reason."
+            f"independently verified against Crossref, of which {preprints} "
+            "are preprints registered with a different agency rather than "
+            "doubtful records. Each paper states its own reason."
         )
 
     no_abstract = [p for p in all_retrieved if not p.abstract]

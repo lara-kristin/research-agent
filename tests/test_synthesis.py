@@ -102,6 +102,30 @@ def test_unverified_papers_are_counted_in_the_limitations(monkeypatch):
     assert any("2 of 3 selected papers" in limit for limit in brief.limitations)
 
 
+def test_unverified_records_are_broken_down_by_reason(monkeypatch):
+    """
+    The count of preprints is given rather than a claim that "most" are
+    preprints. A hedge is true whatever the proportions and so says nothing
+    about the run it describes, and it hides records unverified for another
+    reason, such as carrying no DOI, inside a majority claim.
+    """
+    monkeypatch.setattr(synthesis, "generate_json", _returns(_ok(["A", "B"])))
+
+    preprint = _paper("A")
+    preprint = preprint.model_copy(
+        update={"verification_note": "arXiv preprint, registered with DataCite not Crossref"}
+    )
+    no_doi = Paper(title="B", abstract="An abstract.", verification_note="no DOI in record")
+
+    papers = [preprint, no_doi]
+    brief = synthesis.synthesise("Q?", [_sub_question(1)], papers, papers, [])
+
+    note = next(l for l in brief.limitations if "could not be" in l)
+    assert "2 of 2 selected papers" in note
+    assert "1 are preprints" in note
+    assert "most" not in note.lower()
+
+
 def test_records_without_abstracts_are_reported_in_the_limitations(monkeypatch):
     """
     A record excluded from scoring was never a candidate for selection
