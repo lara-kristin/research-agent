@@ -1,0 +1,41 @@
+﻿2026-09-12 21:32:32,024 INFO     src.main | Cache bypassed: every request will be issued live
+2026-09-12 21:32:32,025 INFO     src.planning_agent | Planning decomposition for: 'What are the failure modes of LLM-based multi-agent systems?'
+2026-09-12 21:32:32,025 INFO     src.llm | LLM decomposition: sending prompt of 445 characters
+2026-09-12 21:32:33,696 INFO     src.planning_agent |   1. What are the common communication failures and coordination breakdowns in LLM-based multi-agent systems? [query: LLM multi-agent communication failure coordination breakdown]
+2026-09-12 21:32:33,705 INFO     src.planning_agent |   2. How do cascading errors and hallucination propagation affect the reliability of multi-agent LLM frameworks? [query: cascading errors hallucination propagation LLM multi-agent reliability]
+2026-09-12 21:32:33,706 INFO     src.planning_agent |   3. What security vulnerabilities, such as adversarial attacks and prompt injection, emerge in cooperative LLM agents? [query: security vulnerability adversarial attack prompt injection multi-agent LLM]
+2026-09-12 21:33:53,170 INFO     src.interface | Researcher approved 3 sub-questions
+2026-09-12 21:33:53,171 INFO     src.retrieval_agent | Retrieving for sub-question 1 with query 'LLM multi-agent communication failure coordination breakdown'
+2026-09-12 21:33:53,172 INFO     src.semantic_scholar | Searching Semantic Scholar: query='LLM multi-agent communication failure coordination breakdown' limit=3
+2026-09-12 21:33:54,117 INFO     src.semantic_scholar | Retrieved 3 of 644 matching records
+2026-09-12 21:33:54,122 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
+2026-09-12 21:33:54,123 INFO     src.retrieval_agent | Retrieving for sub-question 2 with query 'cascading errors hallucination propagation LLM multi-agent reliability'
+2026-09-12 21:33:54,124 INFO     src.semantic_scholar | Searching Semantic Scholar: query='cascading errors hallucination propagation LLM multi-agent reliability' limit=3
+2026-09-12 21:33:54,931 INFO     src.semantic_scholar | Retrieved 3 of 104 matching records
+2026-09-12 21:33:54,934 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
+2026-09-12 21:33:54,935 INFO     src.retrieval_agent | Retrieving for sub-question 3 with query 'security vulnerability adversarial attack prompt injection multi-agent LLM'
+2026-09-12 21:33:54,936 INFO     src.semantic_scholar | Searching Semantic Scholar: query='security vulnerability adversarial attack prompt injection multi-agent LLM' limit=3
+2026-09-12 21:33:56,087 INFO     src.semantic_scholar | Retrieved 3 of 593 matching records
+2026-09-12 21:33:56,093 INFO     src.retrieval_agent | Threshold met: 3 usable records against a threshold of 3
+2026-09-12 21:33:56,094 INFO     src.orchestrator | Retrieval complete: 9 records across 3 sub-questions
+2026-09-12 21:33:56,094 INFO     src.orchestrator | Deduplication: 9 records in, 9 out, 0 duplicates removed
+2026-09-12 21:33:56,496 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2502.14847
+2026-09-12 21:33:57,629 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2508.00032
+2026-09-12 21:33:58,484 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2504.00587
+2026-09-12 21:33:59,503 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2505.19234
+2026-09-12 21:34:00,555 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2603.24579
+2026-09-12 21:34:00,568 INFO     src.crossref | No DOI to verify: 'PropUQ-MAS: Propagation-Aware Uncertainty Quantification for LLM Multi-Agent Systems'
+2026-09-12 21:34:01,505 INFO     src.crossref | arXiv preprint, not held by Crossref: 10.48550/arxiv.2502.11127
+2026-09-12 21:34:02,505 INFO     src.crossref | Verified 10.1109/wiecon-ece69386.2025.11526251
+2026-09-12 21:34:03,640 INFO     src.crossref | Verified 10.1109/dsn-s65789.2025.00037
+2026-09-12 21:34:03,646 INFO     src.orchestrator | Validation: 2 of 9 records verified against Crossref
+2026-09-12 21:34:03,649 INFO     src.evaluation_agent | Assessing 9 papers against 3 sub-questions in one request
+2026-09-12 21:34:03,652 INFO     src.llm | LLM relevance assessment: sending prompt of 12393 characters
+2026-09-12 21:34:09,882 INFO     src.evaluation_agent | Assessment complete: 9 of 27 pairings at or above 0.60
+2026-09-12 21:35:37,357 INFO     src.interface | Researcher refined the selection: 8 kept, 1 removed
+2026-09-12 21:35:37,358 INFO     src.orchestrator | Proceeding with 8 approved paper(s)
+2026-09-12 21:35:37,358 INFO     src.synthesis | Synthesising a brief from 8 approved paper(s)
+2026-09-12 21:35:37,358 INFO     src.llm | LLM synthesis: sending prompt of 11552 characters
+2026-09-12 21:35:41,387 INFO     src.synthesis | Brief assembled: 8 summaries, 4 themes, 3 gaps, 3 limitations
+2026-09-12 21:35:41,415 INFO     src.orchestrator | Saved brief with 8 paper(s) to output\brief_20260912_213541.md and output\brief_20260912_213541.json
+2026-09-12 21:35:41,431 INFO     src.main | Done. output\brief_20260912_213541.md and output\brief_20260912_213541.json

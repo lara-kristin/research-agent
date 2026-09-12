@@ -3,22 +3,22 @@
   "sub_questions": [
     {
       "id": 1,
-      "text": "What are the common communication and coordination failure modes in LLM-based multi-agent systems?",
+      "text": "What are the common communication failures and coordination breakdowns in LLM-based multi-agent systems?",
       "search_query": "LLM multi-agent communication failure coordination breakdown",
       "approved": true,
       "retried_once": false
     },
     {
       "id": 2,
-      "text": "How do error propagation and cascading failures manifest across interacting language model agents?",
-      "search_query": "error propagation cascading failures multi-agent language models",
+      "text": "How do cascading errors and hallucination propagation affect the reliability of multi-agent LLM frameworks?",
+      "search_query": "cascading errors hallucination propagation LLM multi-agent reliability",
       "approved": true,
       "retried_once": false
     },
     {
       "id": 3,
-      "text": "What vulnerabilities lead to alignment drift, hallucination amplification, and task derailment in cooperative LLM agents?",
-      "search_query": "alignment drift hallucination amplification task derailment multi-agent systems",
+      "text": "What security vulnerabilities, such as adversarial attacks and prompt injection, emerge in cooperative LLM agents?",
+      "search_query": "security vulnerability adversarial attack prompt injection multi-agent LLM",
       "approved": true,
       "retried_once": false
     }
@@ -74,286 +74,306 @@
       "verification_note": "arXiv preprint, registered with DataCite not Crossref"
     },
     {
-      "title": "AgentAsk: Multi-Agent Systems Need to Ask",
+      "title": "GUARDIAN: Safeguarding LLM Multi-Agent Collaborations with Temporal Graph Modeling",
       "year": 2025,
-      "doi": "10.48550/arxiv.2510.07593",
+      "doi": "10.48550/arxiv.2505.19234",
       "authors": [
-        "Bohan Li",
-        "Kuo Yang",
-        "Ying Lai",
-        "Yudong Zhang",
-        "C. Zhang",
-        "Guibin Zhang",
-        "Xinlei Yu",
+        "Jialong Zhou",
+        "Lichao Wang",
+        "Xiao Yang"
+      ],
+      "abstract": "The emergence of large language models (LLMs) enables the development of intelligent agents capable of engaging in complex and multi-turn dialogues. However, multi-agent collaboration faces critical safety challenges, such as hallucination amplification and error injection and propagation. This paper presents GUARDIAN, a unified method for detecting and mitigating multiple safety concerns in GUARDing Intelligent Agent collaboratioNs. By modeling the multi-agent collaboration process as a discrete-time temporal attributed graph, GUARDIAN explicitly captures the propagation dynamics of hallucinations and errors. The unsupervised encoder-decoder architecture incorporating an incremental training paradigm learns to reconstruct node attributes and graph structures from latent embeddings, enabling the identification of anomalous nodes and edges with unparalleled precision. Moreover, we introduce a graph abstraction mechanism based on the Information Bottleneck Theory, which compresses temporal interaction graphs while preserving essential patterns. Extensive experiments demonstrate GUARDIAN's effectiveness in safeguarding LLM multi-agent collaborations against diverse safety vulnerabilities, achieving state-of-the-art accuracy with efficient resource utilization. The code is available at https://github.com/JialongZhou666/GUARDIAN",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "MARCH: Multi-Agent Reinforced Self-Check for LLM Hallucination",
+      "year": 2026,
+      "doi": "10.48550/arxiv.2603.24579",
+      "authors": [
+        "Zhuo Li",
+        "Yupeng Zhang",
+        "Pengyu Cheng",
+        "Jiajun Song",
+        "Mengyu Zhou",
+        "Hao Li",
+        "Shujie Hu",
+        "Yubin Qin",
+        "Erchao Zhao",
+        "Xiaoxi Jiang",
+        "Guanjun Jiang"
+      ],
+      "abstract": "Hallucination remains a critical bottleneck for large language models (LLMs), undermining their reliability in real-world applications, especially in Retrieval-Augmented Generation (RAG) systems. While existing hallucination detection methods employ LLM-as-a-judge to verify LLM outputs against retrieved evidence, they suffer from inherent confirmation bias, where the verifier inadvertently reproduces the errors of the original generation. To address this, we introduce Multi-Agent Reinforced Self-Check for Hallucination (MARCH), a framework that enforces rigorous factual alignment by leveraging deliberate information asymmetry. MARCH orchestrates a collaborative pipeline of three specialized agents: a Solver, a Proposer, and a Checker. The Solver generates an initial RAG response, which the Proposer decomposes into claim-level verifiable atomic propositions. Crucially, the Checker validates these propositions against retrieved evidence in isolation, deprived of the Solver's original output. This well-crafted information asymmetry scheme breaks the cycle of self-confirmation bias. By training this pipeline with multi-agent reinforcement learning (MARL), we enable the agents to co-evolve and optimize factual adherence. Extensive experiments across hallucination benchmarks demonstrate that MARCH substantially reduces hallucination rates. Notably, an 8B-parameter LLM equipped with MARCH achieves performance competitive with powerful closed-source models. MARCH paves a scalable path for factual self-improvement of LLMs through co-evolution. The code is at https://github.com/Qwen-Applications/MARCH.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "G-Safeguard: A Topology-Guided Security Lens and Treatment on LLM-based Multi-agent Systems",
+      "year": 2025,
+      "doi": "10.48550/arxiv.2502.11127",
+      "authors": [
+        "Shilong Wang",
+        "Gui-Min Zhang",
         "Miao Yu",
-        "Xu Wang",
+        "Guancheng Wan",
+        "Fanci Meng",
+        "Chongye Guo",
+        "Kun Wang",
         "Yang Wang"
       ],
-      "abstract": "Multi-agent systems (MAS) built on large language models promise improved problem-solving through collaboration, yet they often fail to consistently outperform strong single-agent baselines due to error propagation at inter-agent message handoffs.In this work, we conduct a systematic empirical analysis of such failures and introduce an edge-level error taxonomy that identifies four dominant error types: Data Gap, Signal Corruption, Referential Drift, and Capability Gap, as primary sources of failure in multi-agent interactions. Building on this taxonomy, we propose AgentAsk, a lightweight clarification module designed to intervene at the edge level in MAS to prevent cascading errors. The module operates by strategically applying minimal clarifications at critical points within the system, improving the accuracy and efficiency of the overall task. AgentAsk is trained to balance the trade-offs between clarification cost, latency, and accuracy, while it is also architecture-agnostic and can be easily integrated into existing systems. Evaluated across five benchmarks, AgentAsk consistently improves accuracy by up to 4.69%, while keeping latency and extra costs below 10% compared to baseline MAS, showcasing its high efficiency and minimal overhead.",
+      "abstract": "Large Language Model (LLM)-based Multi-agent Systems (MAS) have demonstrated remarkable capabilities in various complex tasks, ranging from collaborative problem-solving to autonomous decision-making. However, as these systems become increasingly integrated into critical applications, their vulnerability to adversarial attacks, misinformation propagation, and unintended behaviors have raised significant concerns. To address this challenge, we introduce G-Safeguard, a topology-guided security lens and treatment for robust LLM-MAS, which leverages graph neural networks to detect anomalies on the multi-agent utterance graph and employ topological intervention for attack remediation. Extensive experiments demonstrate that G-Safeguard: (I) exhibits significant effectiveness under various attack strategies, recovering over 40% of the performance for prompt injection; (II) is highly adaptable to diverse LLM backbones and large-scale MAS; (III) can seamlessly combine with mainstream MAS with security guarantees. The code is available at https://github.com/wslong20/G-safeguard.",
       "doi_verified": false,
       "verification_note": "arXiv preprint, registered with DataCite not Crossref"
     },
     {
-      "title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
-      "year": 2026,
-      "doi": "10.48550/arxiv.2605.23927",
-      "authors": [
-        "Xingyu Xiao",
-        "Jiejuan Tong",
-        "Jingang Liang",
-        "Haitao Wang"
-      ],
-      "abstract": "Team-level failure in nuclear control rooms arises not from isolated operator error, but from emergent interaction dynamics, delayed diagnosis, suppressed dissent, and authority-driven error propagation, that conventional human reliability analysis methods are structurally unable to model. This study introduces TEAM-SimHRA, a multi-agent large language model simulation framework that reconceptualizes human reliability as an interaction-driven emergent property of control room teams rather than a static individual attribute. Unlike existing approaches that assign fixed error probabilities to predefined tasks, TEAM-SimHRA reproduces collective cognition, role-conditioned authority dynamics, and real-time communication suppression across temporally evolving accident progressions. Validated against the Three Mile Island (1979) and Chernobyl (1986) accidents, the two most extensively documented nuclear team failures , the framework achieves face-validity pass rates of 43.5% and 52.6% respectively, reproducing near-historical decision delay (134.8 vs. 138 min), perfect communication suppression stability, and full authority pressure cascade at historically accurate propagation depth. These results demonstrate that multi-agent simulation can extract quantitative team-level reliability indicators that are inaccessible to traditional methods, opening a viable path toward simulation-based dynamic probabilistic risk assessment for safety-critical sociotechnical systems.",
-      "doi_verified": false,
-      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
-    },
-    {
-      "title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "title": "A Multi-Agent LLM Defense Pipeline Against Prompt Injection Attacks",
       "year": 2025,
-      "doi": "10.48550/arxiv.2502.11799",
+      "doi": "10.1109/wiecon-ece69386.2025.11526251",
       "authors": [
-        "Peiying Yu",
-        "Guoxin Chen",
-        "Jingjing Wang"
+        "S. M. Asif Hossain",
+        "Ruksat Khan Shayoni",
+        "Mohd Ruhul Ameen",
+        "Akif Islam",
+        "M. Mridha",
+        "Jungpil Shin"
       ],
-      "abstract": "Despite the remarkable capabilities of large language models (LLMs) in various reasoning tasks, they still struggle with table reasoning tasks, particularly in maintaining consistency throughout multi-step reasoning processes. While existing approaches have explored various decomposition strategies, they often lack effective mechanisms to identify and correct errors in intermediate reasoning steps, leading to cascading error propagation. To address these issues, we propose Table-Critic, a novel multi-agent framework that facilitates collaborative criticism and iterative refinement of the reasoning process until convergence to correct solutions. Our framework consists of four specialized agents: a Judge for error identification, a Critic for comprehensive critiques, a Refiner for process improvement, and a Curator for pattern distillation. To effectively deal with diverse and unpredictable error types, we introduce a self-evolving template tree that systematically accumulates critique knowledge through experience-driven learning and guides future reflections. Extensive experiments have demonstrated that Table-Critic achieves substantial improvements over existing methods, achieving superior accuracy and error correction rates while maintaining computational efficiency and lower solution degradation rate.",
-      "doi_verified": false,
-      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+      "abstract": "Prompt injection attacks represent a major vulnerability in Large Language Model (LLM) deployments, where malicious instructions embedded in user inputs can override system prompts and induce unintended behaviors. This paper presents a novel multi-agent defense framework that employs specialized LLM agents in coordinated pipelines to detect and neutralize prompt injection attacks in real-time. We evaluate our approach using two distinct architectures: a sequential chain-ofagents pipeline and a hierarchical coordinator-based system. Our comprehensive evaluation on 55 unique prompt injection attacks, grouped into 8 categories and totaling 400 attack instances across two LLM platforms (ChatGLM and Llama2), demonstrates significant security improvements. Without defense mechanisms, baseline Attack Success Rates (ASR) reached $\\mathbf{3 0 \\%}$ for ChatGLM and 20 % for Llama2. Our multi-agent pipeline achieved 100 % mitigation, reducing ASR to 0 % across all tested scenarios. The framework demonstrates robustness across multiple attack categories including direct overrides, code execution attempts, data exfiltration, and obfuscation techniques, while maintaining system functionality for legitimate queries.",
+      "doi_verified": true,
+      "verification_note": null
     },
     {
-      "title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
-      "year": 2026,
-      "doi": "10.65109/hzer2072",
+      "title": "To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt",
+      "year": 2025,
+      "doi": "10.1109/dsn-s65789.2025.00037",
       "authors": [
-        "Jiawei Guo",
-        "Hongjie Nie",
-        "Qianbo Zang",
-        "Shu Yang",
-        "Shuodi Liu",
-        "Yiwei Ru",
-        "Liuyu Xiang",
-        "Di Wang",
-        "Zhaofeng He"
+        "Zhilong Wang",
+        "N. Nagaraja",
+        "Lan Zhang",
+        "Hayretdin Bahşi",
+        "Pawan Patil",
+        "Peng Liu"
       ],
-      "abstract": "Large Language Model (LLM) agents that browse the web are increasingly important, but their effectiveness is hindered by imperfect integration of internal knowledge and external tools. We introduce BrowseBench and present the first systematic investigation into over-reliance patterns of browsing agents. Through controlled experiments, we identify three distinct failure modes: (1) Excessive Conservatism—unnecessary tool invocations for known information; (2) Over-trust in Web Sources—uncritical acceptance of retrieved content; and (3) Planning Deficiency—lack of query decomposition strategies. To address these, we propose three mitigation strategies: Direct Preference Optimization (DPO), Attention Refinement (AR), and Hierarchical Query Decomposition (HQD). Experiments demonstrate that our interventions significantly reduce over-reliance and enhance performance.",
+      "abstract": "LLM agents are widely used as agents for customer support, content generation, and code assistance. However, they are vulnerable to prompt injection attacks, where adversarial inputs manipulate the model’s behavior. Traditional defenses like input sanitization, guard models, and guardrails are either cumbersome or ineffective. In this paper, we propose a novel, lightweight defense mechanism called Polymorphic Prompt Assembling (PPA), which protects against prompt injection with near-zero overhead. The approach is based on the insight that prompt injection requires guessing and breaking the structure of the system prompt. By dynamically varying the structure of system prompts, PPA prevents attackers from predicting the prompt structure, thereby enhancing security without compromising performance. We conducted experiments to evaluate the effectiveness of PPA against existing attacks and compared it with other defense methods.",
       "doi_verified": true,
       "verification_note": null
     }
   ],
   "summaries": {
-    "Red-Teaming LLM Multi-Agent Systems via Communication Attacks": "This paper introduces Agent-in-the-Middle (AiTM), a novel attack that exploits communication mechanisms in LLM-based multi-agent systems by intercepting and manipulating inter-agent messages. It demonstrates that adversaries can compromise entire multi-agent systems solely by altering messages passed between agents using an LLM-powered adversarial agent with a reflection mechanism. The comprehensive evaluation highlights that these systems are vulnerable to communication-based security attacks.",
-    "Strategic Communication and Language Bias in Multi-Agent LLM Coordination": "This research explores how linguistic framing and strategic communication affect cooperation in LLM-based multi-agent coordination scenarios. Using FAIRGAME simulations with advanced LLMs, the study reveals that communication significantly influences agent behavior and can reinforce existing biases. The findings highlight a dual role for communication in both fostering coordination and propagating language-driven effects.",
-    "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems": "This paper addresses centralized coordination bottlenecks, scalability limits, and single points of failure in LLM multi-agent systems by proposing AgentNet, a decentralized Retrieval-Augmented Generation-based framework. AgentNet allows agents to specialize, evolve, and collaborate autonomously in a dynamically structured Directed Acyclic Graph. The framework enables fault-tolerant, privacy-preserving collaboration through decentralized coordination, dynamic graph topology, and a retrieval-based memory system.",
-    "AgentAsk: Multi-Agent Systems Need to Ask": "This work identifies error propagation at inter-agent message handoffs as a primary reason multi-agent systems fail to consistently outperform single-agent baselines. It establishes an edge-level error taxonomy consisting of Data Gap, Signal Corruption, Referential Drift, and Capability Gap. To prevent cascading errors, the authors propose AgentAsk, a lightweight clarification module that applies minimal edge-level interventions.",
-    "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models": "This study introduces TEAM-SimHRA to model team-level failures and emergent interaction dynamics in nuclear control rooms using multi-agent large language models. Validated against historical accidents like Three Mile Island and Chernobyl, the framework successfully reproduces collective cognition, role-conditioned authority dynamics, communication suppression, and authority pressure cascades. It demonstrates that multi-agent simulation can extract quantitative reliability indicators for sociotechnical systems.",
-    "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning": "This paper addresses cascading error propagation during multi-step reasoning processes in table reasoning by introducing Table-Critic, a multi-agent framework for collaborative criticism and iterative refinement. The framework utilizes specialized agents including a Judge, Critic, Refiner, and Curator, supported by a self-evolving template tree to accumulate critique knowledge. Experiments show that this approach achieves superior accuracy and error correction rates.",
-    "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents": "This research investigates over-reliance patterns in LLM browsing agents regarding internal knowledge versus external tools through BrowseBench. It identifies three distinct failure modes: excessive conservatism, over-trust in web sources, and planning deficiency. The paper proposes and evaluates mitigations such as Direct Preference Optimization, Attention Refinement, and Hierarchical Query Decomposition."
+    "Red-Teaming LLM Multi-Agent Systems via Communication Attacks": "This paper introduces Agent-in-the-Middle (AiTM), an attack that exploits communication mechanisms in LLM-based multi-agent systems by intercepting and manipulating inter-agent messages. It demonstrates that adversaries can compromise entire systems through message manipulation using an LLM-powered adversarial agent with a reflection mechanism. The work highlights communication frameworks as critical security vulnerabilities in multi-agent systems.",
+    "Strategic Communication and Language Bias in Multi-Agent LLM Coordination": "This paper explores how linguistic framing and strategic communication affect cooperation and coordination in multi-agent LLM scenarios. Using simulated games with models like GPT-4o and Llama 4 Maverick, the study reveals that communication significantly influences agent behavior, though its impact varies by language, personality, and game structure. These findings highlight the dual role of communication in fostering coordination while reinforcing biases.",
+    "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems": "This paper proposes AgentNet, a decentralized, Retrieval-Augmented Generation-based framework that addresses scalability bottlenecks and single points of failure caused by centralized coordination in LLM multi-agent systems. It enables agents to specialize, evolve, and collaborate autonomously in a dynamically structured Directed Acyclic Graph. The framework improves fault tolerance and privacy while achieving higher task accuracy than centralized baselines.",
+    "GUARDIAN: Safeguarding LLM Multi-Agent Collaborations with Temporal Graph Modeling": "This paper introduces GUARDIAN to address safety challenges such as hallucination amplification and error propagation in multi-agent collaborations. By modeling the collaboration process as a discrete-time temporal attributed graph, the method reconstructs node attributes and graph structures to identify anomalous nodes and edges. It achieves state-of-the-art accuracy in safeguarding multi-agent systems against these safety vulnerabilities.",
+    "MARCH: Multi-Agent Reinforced Self-Check for LLM Hallucination": "This paper introduces MARCH to mitigate hallucination bottlenecks in LLM and Retrieval-Augmented Generation systems by overcoming confirmation bias. It orchestrates a collaborative pipeline of a Solver, Proposer, and Checker, utilizing deliberate information asymmetry to validate propositions against retrieved evidence in isolation. Trained with multi-agent reinforcement learning, the framework significantly reduces hallucination rates.",
+    "G-Safeguard: A Topology-Guided Security Lens and Treatment on LLM-based Multi-agent Systems": "This paper presents G-Safeguard, a topology-guided security lens and treatment that uses graph neural networks to detect anomalies on multi-agent utterance graphs and applies topological intervention. It addresses vulnerabilities to adversarial attacks, misinformation propagation, and unintended behaviors. Experiments show it recovers over 40 percent of performance for prompt injection and is adaptable to diverse backbones and large-scale systems.",
+    "A Multi-Agent LLM Defense Pipeline Against Prompt Injection Attacks": "This paper presents a multi-agent defense framework employing specialized LLM agents in sequential chain and hierarchical coordinator pipelines to detect and neutralize prompt injection attacks. Evaluated across 55 unique attacks, the multi-agent pipeline achieved complete mitigation by reducing attack success rates to zero. The framework demonstrates robustness across multiple attack categories while maintaining system functionality.",
+    "To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt": "This paper proposes Polymorphic Prompt Assembling, a lightweight defense mechanism protecting LLM agents against prompt injection attacks with near-zero overhead. It addresses the vulnerability where adversarial inputs manipulate model behavior by guessing system prompt structures. By dynamically varying system prompt structures, the approach prevents attackers from predicting the structure to enhance security without compromising performance."
   },
   "themes": [
-    "Vulnerabilities and security risks stemming from inter-agent communication and message manipulation",
-    "Cascading error propagation and failures occurring across inter-agent message handoffs and reasoning steps",
-    "Coordination challenges, including centralized bottlenecks and the dual role of communication in fostering cooperation versus reinforcing bias",
-    "Mitigation strategies and architectures designed to improve reliability, such as decentralized frameworks, clarification modules, and iterative refinement mechanisms"
+    "Vulnerability of LLM multi-agent systems to adversarial attacks and prompt injection",
+    "Propagation and mitigation of errors and hallucinations across collaborative agent frameworks",
+    "The critical role of communication structures and message-based interactions in agent coordination and security",
+    "Graph-based and topological modeling for analyzing, safeguarding, or structuring multi-agent systems"
   ],
   "gaps": [
-    "The long-term evolutionary stability and behavioral drift of multi-agent systems operating autonomously over extended deployment periods",
-    "Quantitative economic or computational cost-benefit trade-offs of deploying complex multi-agent architectures versus simpler baseline models in high-stakes environments"
+    "Long-term economic or game-theoretic implications of strategic communication failures in large-scale multi-agent deployments",
+    "The specific impact of multi-lingual communication breakdown on cross-organizational and privacy-preserving knowledge exchange",
+    "Empirical analysis of real-world financial or enterprise operational losses resulting from cascading hallucination propagation"
   ],
   "limitations": [
     "Summaries derive from abstracts alone. Full texts were not retrieved, so methods, results and limitations reported only in the body of a paper are not represented here.",
     "One literature source was searched. Records held only by other indexes will not appear.",
-    "6 of 7 selected papers could not be independently verified against Crossref. Most are preprints registered with a different agency rather than doubtful records; each paper states its own reason."
+    "6 of 8 selected papers could not be independently verified against Crossref. Most are preprints registered with a different agency rather than doubtful records; each paper states its own reason."
   ],
-  "retrieved_at": "20260912_163518",
+  "retrieved_at": "20260912_213541",
   "assessments": [
     {
       "paper_title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
       "sub_question_id": 1,
-      "relevance_score": 0.9,
-      "reason": "The paper directly addresses communication failure modes by analyzing how message interception and manipulation can compromise LLM-based multi-agent systems.",
-      "selected": true
+      "relevance_score": 0.4,
+      "reason": "The paper mentions communication mechanisms and inter-agent message manipulation, but focuses primarily on security vulnerability rather than general communication failures.",
+      "selected": false
     },
     {
       "paper_title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
       "sub_question_id": 2,
-      "relevance_score": 0.5,
-      "reason": "It discusses compromising entire multi-agent systems through message manipulation, but does not deeply focus on natural error propagation across interacting agents.",
+      "relevance_score": 0.2,
+      "reason": "It does not discuss hallucination propagation or cascading errors in reliability.",
       "selected": false
     },
     {
       "paper_title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
       "sub_question_id": 3,
-      "relevance_score": 0.3,
-      "reason": "While it touches on security vulnerabilities, it focuses on adversarial communication attacks rather than intrinsic alignment drift or hallucination amplification.",
-      "selected": false
+      "relevance_score": 0.9,
+      "reason": "It directly explores security vulnerabilities and communication-based attacks in LLM multi-agent systems.",
+      "selected": true
     },
     {
       "paper_title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
       "sub_question_id": 1,
       "relevance_score": 0.7,
-      "reason": "It investigates how communication and language framing affect LLM agent coordination and behavior in multi-agent scenarios.",
+      "reason": "It investigates how strategic scenarios and communication influence agent behavior and coordination.",
       "selected": true
     },
     {
       "paper_title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
       "sub_question_id": 2,
-      "relevance_score": 0.2,
-      "reason": "It does not explicitly model error propagation or cascading failures across interacting language model agents.",
+      "relevance_score": 0.1,
+      "reason": "It focuses on language bias and coordination rather than hallucination propagation or cascading errors.",
       "selected": false
     },
     {
       "paper_title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
-      "sub_question_id": 3,
-      "relevance_score": 0.4,
-      "reason": "It highlights the dual role of communication in reinforcing biases, which relates moderately to alignment and coordination issues.",
-      "selected": false
-    },
-    {
-      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
-      "sub_question_id": 1,
-      "relevance_score": 0.6,
-      "reason": "It discusses coordination failure modes such as centralized bottlenecks and single points of failure in multi-agent systems.",
-      "selected": true
-    },
-    {
-      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
-      "sub_question_id": 2,
-      "relevance_score": 0.2,
-      "reason": "It briefly mentions fault-tolerant collaboration but does not study error propagation or cascading failures in depth.",
-      "selected": false
-    },
-    {
-      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
       "sub_question_id": 3,
       "relevance_score": 0.1,
-      "reason": "The abstract focuses on decentralized coordination topologies and RAG-based memory rather than alignment drift or task derailment.",
+      "reason": "It does not target adversarial attacks or prompt injection in cooperative agents.",
       "selected": false
     },
     {
-      "paper_title": "AgentAsk: Multi-Agent Systems Need to Ask",
-      "sub_question_id": 1,
-      "relevance_score": 0.7,
-      "reason": "It identifies specific inter-agent message handoff failures and introduces an edge-level error taxonomy for multi-agent interactions.",
-      "selected": true
-    },
-    {
-      "paper_title": "AgentAsk: Multi-Agent Systems Need to Ask",
-      "sub_question_id": 2,
-      "relevance_score": 1.0,
-      "reason": "The paper directly addresses how error propagation manifests across interacting agents and proposes a module to prevent cascading errors.",
-      "selected": true
-    },
-    {
-      "paper_title": "AgentAsk: Multi-Agent Systems Need to Ask",
-      "sub_question_id": 3,
-      "relevance_score": 0.6,
-      "reason": "It categorizes dominant error types like Data Gap and Referential Drift which relate to cooperative agent task derailment.",
-      "selected": true
-    },
-    {
-      "paper_title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
       "sub_question_id": 1,
       "relevance_score": 0.8,
-      "reason": "It explicitly models team-level failure modes like delayed diagnosis, suppressed dissent, and communication suppression in multi-agent LLM simulations.",
+      "reason": "It discusses coordination breakdowns and centralization bottlenecks in multi-agent systems and proposes a decentralized alternative.",
       "selected": true
     },
     {
-      "paper_title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
       "sub_question_id": 2,
-      "relevance_score": 0.7,
-      "reason": "It examines authority-driven error propagation and real-time communication suppression across temporally evolving processes.",
-      "selected": true
+      "relevance_score": 0.2,
+      "reason": "It briefly mentions system robustness but does not focus on reliability issues from cascading errors or hallucinations.",
+      "selected": false
     },
     {
-      "paper_title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
       "sub_question_id": 3,
-      "relevance_score": 0.3,
-      "reason": "While it focuses on sociotechnical safety and team reliability, it does not specifically address alignment drift or hallucination amplification.",
+      "relevance_score": 0.1,
+      "reason": "It focuses on decentralization and routing rather than adversarial attacks or prompt injections.",
       "selected": false
     },
     {
-      "paper_title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "paper_title": "GUARDIAN: Safeguarding LLM Multi-Agent Collaborations with Temporal Graph Modeling",
       "sub_question_id": 1,
-      "relevance_score": 0.5,
-      "reason": "It addresses coordination challenges in multi-step reasoning processes and intermediate error identification.",
+      "relevance_score": 0.3,
+      "reason": "It addresses multi-turn dialogues and collaborations, though primarily from a safety perspective.",
       "selected": false
     },
     {
-      "paper_title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "paper_title": "GUARDIAN: Safeguarding LLM Multi-Agent Collaborations with Temporal Graph Modeling",
       "sub_question_id": 2,
       "relevance_score": 0.9,
-      "reason": "The paper directly targets intermediate reasoning errors and the problem of cascading error propagation in multi-agent frameworks.",
+      "reason": "It explicitly targets hallucination amplification, error injection, and propagation dynamics in multi-agent collaborations.",
       "selected": true
     },
     {
-      "paper_title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "paper_title": "GUARDIAN: Safeguarding LLM Multi-Agent Collaborations with Temporal Graph Modeling",
       "sub_question_id": 3,
       "relevance_score": 0.4,
-      "reason": "It deals with error correction and consistency in reasoning tasks, but does not focus broadly on alignment drift or task derailment.",
+      "reason": "It discusses general safety vulnerabilities in collaborations, but does not center on prompt injection or adversarial attacks.",
       "selected": false
     },
     {
-      "paper_title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
+      "paper_title": "MARCH: Multi-Agent Reinforced Self-Check for LLM Hallucination",
       "sub_question_id": 1,
       "relevance_score": 0.2,
-      "reason": "It focuses on single browsing agent over-reliance patterns rather than multi-agent communication and coordination failure modes.",
+      "reason": "It examines a collaborative multi-agent pipeline for self-check rather than general communication failures between agents.",
       "selected": false
     },
     {
-      "paper_title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
+      "paper_title": "MARCH: Multi-Agent Reinforced Self-Check for LLM Hallucination",
       "sub_question_id": 2,
-      "relevance_score": 0.1,
-      "reason": "It does not discuss error propagation across interacting language model agents.",
-      "selected": false
-    },
-    {
-      "paper_title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
-      "sub_question_id": 3,
-      "relevance_score": 0.7,
-      "reason": "It investigates over-reliance patterns, excessive conservatism, and planning deficiencies that lead to task failures in LLM agents.",
+      "relevance_score": 0.8,
+      "reason": "It focuses directly on mitigating hallucinations and breaking confirmation bias in multi-agent verification pipelines.",
       "selected": true
     },
     {
-      "paper_title": "FineGRAIN: Evaluating Failure Modes of Text-to-Image Models with Vision Language Model Judges",
-      "sub_question_id": 1,
-      "relevance_score": 0.0,
-      "reason": "The paper is about text-to-image models and vision language models, not LLM-based multi-agent communication.",
-      "selected": false
-    },
-    {
-      "paper_title": "FineGRAIN: Evaluating Failure Modes of Text-to-Image Models with Vision Language Model Judges",
-      "sub_question_id": 2,
-      "relevance_score": 0.0,
-      "reason": "It does not address error propagation across interacting language model agents.",
-      "selected": false
-    },
-    {
-      "paper_title": "FineGRAIN: Evaluating Failure Modes of Text-to-Image Models with Vision Language Model Judges",
+      "paper_title": "MARCH: Multi-Agent Reinforced Self-Check for LLM Hallucination",
       "sub_question_id": 3,
       "relevance_score": 0.1,
-      "reason": "It evaluates specific attribute failure modes in text-to-image generation rather than cooperative LLM agent alignment drift.",
+      "reason": "It does not discuss adversarial attacks or prompt injection.",
       "selected": false
     },
     {
-      "paper_title": "Trust at Your Own Peril: A Mixed Methods Exploration of the Ability of Large Language Models to Generate Expert‐Like Systems Engineering Artifacts and a Characterization of Failure Modes",
+      "paper_title": "PropUQ-MAS: Propagation-Aware Uncertainty Quantification for LLM Multi-Agent Systems",
+      "sub_question_id": 1,
+      "relevance_score": 0.3,
+      "reason": "It discusses inter-agent dependencies and intermediate message errors without detailing broader communication failures.",
+      "selected": false
+    },
+    {
+      "paper_title": "PropUQ-MAS: Propagation-Aware Uncertainty Quantification for LLM Multi-Agent Systems",
+      "sub_question_id": 2,
+      "relevance_score": 0.9,
+      "reason": "It directly models how errors in intermediate messages are inherited and amplified by downstream agents to quantify reliability.",
+      "selected": true
+    },
+    {
+      "paper_title": "PropUQ-MAS: Propagation-Aware Uncertainty Quantification for LLM Multi-Agent Systems",
+      "sub_question_id": 3,
+      "relevance_score": 0.1,
+      "reason": "It focuses on uncertainty quantification and reliability propagation rather than adversarial attacks.",
+      "selected": false
+    },
+    {
+      "paper_title": "G-Safeguard: A Topology-Guided Security Lens and Treatment on LLM-based Multi-agent Systems",
+      "sub_question_id": 1,
+      "relevance_score": 0.3,
+      "reason": "It touches on unintended behaviors and misuse within multi-agent utterance graphs.",
+      "selected": false
+    },
+    {
+      "paper_title": "G-Safeguard: A Topology-Guided Security Lens and Treatment on LLM-based Multi-agent Systems",
+      "sub_question_id": 2,
+      "relevance_score": 0.4,
+      "reason": "It mentions misinformation propagation, which relates to reliability, but focuses predominantly on security attacks.",
+      "selected": false
+    },
+    {
+      "paper_title": "G-Safeguard: A Topology-Guided Security Lens and Treatment on LLM-based Multi-agent Systems",
+      "sub_question_id": 3,
+      "relevance_score": 0.9,
+      "reason": "It directly addresses vulnerability to adversarial attacks and prompt injection in LLM-based multi-agent systems.",
+      "selected": true
+    },
+    {
+      "paper_title": "A Multi-Agent LLM Defense Pipeline Against Prompt Injection Attacks",
+      "sub_question_id": 1,
+      "relevance_score": 0.2,
+      "reason": "It employs multi-agent pipelines for defense rather than analyzing general coordination breakdowns.",
+      "selected": false
+    },
+    {
+      "paper_title": "A Multi-Agent LLM Defense Pipeline Against Prompt Injection Attacks",
+      "sub_question_id": 2,
+      "relevance_score": 0.1,
+      "reason": "It does not discuss cascading errors or hallucination propagation.",
+      "selected": false
+    },
+    {
+      "paper_title": "A Multi-Agent LLM Defense Pipeline Against Prompt Injection Attacks",
+      "sub_question_id": 3,
+      "relevance_score": 0.9,
+      "reason": "It focuses heavily on detecting and neutralizing prompt injection attacks using a multi-agent defense framework.",
+      "selected": true
+    },
+    {
+      "paper_title": "To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt",
       "sub_question_id": 1,
       "relevance_score": 0.1,
-      "reason": "It analyzes general LLM-generated artifacts rather than multi-agent communication or coordination.",
+      "reason": "It focuses on single or general LLM agents rather than multi-agent communication failures.",
       "selected": false
     },
     {
-      "paper_title": "Trust at Your Own Peril: A Mixed Methods Exploration of the Ability of Large Language Models to Generate Expert‐Like Systems Engineering Artifacts and a Characterization of Failure Modes",
+      "paper_title": "To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt",
       "sub_question_id": 2,
-      "relevance_score": 0.0,
-      "reason": "It does not cover cascading failures across interacting language model agents.",
+      "relevance_score": 0.1,
+      "reason": "It does not address cascading errors or reliability in multi-agent frameworks.",
       "selected": false
     },
     {
-      "paper_title": "Trust at Your Own Peril: A Mixed Methods Exploration of the Ability of Large Language Models to Generate Expert‐Like Systems Engineering Artifacts and a Characterization of Failure Modes",
+      "paper_title": "To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt",
       "sub_question_id": 3,
-      "relevance_score": 0.5,
-      "reason": "It characterizes severe failure modes like premature requirements definition and overspecification in LLM outputs, which relates to task reliability.",
-      "selected": false
+      "relevance_score": 0.8,
+      "reason": "It proposes a defense mechanism specifically targeting prompt injection attacks in LLM agents.",
+      "selected": true
     }
   ]
 }
