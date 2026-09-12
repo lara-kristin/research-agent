@@ -38,7 +38,7 @@ def main() -> int:
     matched nothing is a successful request, and the distinction is the one
     the pipeline preserves throughout.
     """
-    parser = argparse.ArgumentParser(description="Retrieve and validate academic papers.")
+    parser = argparse.ArgumentParser(description="Plan, retrieve, validate and synthesise academic literature into a research brief.")
     parser.add_argument("query", help="the research question to investigate")
     parser.add_argument(
         "--limit",
