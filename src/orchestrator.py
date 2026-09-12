@@ -15,8 +15,9 @@ from pathlib import Path
 from src.crossref import verify
 from src.evaluation_agent import evaluate_evidence
 from src.interface import review_evidence, review_sub_questions
-from src.models import Assessment, Decision, Paper, SubQuestion
+from src.models import Assessment, Brief, Decision, Paper, SubQuestion
 from src.planning_agent import plan_research, reformulate_query
+from src.synthesis import synthesise
 from src.retrieval_agent import assess_threshold, count_usable, retrieve_evidence
 
 # Runs write here rather than into the repository root, so output is separable
@@ -59,6 +60,11 @@ def retrieve_for_plan(
     Retrieval refuses to run on sub-questions the researcher has not approved.
     A flag recording approval is only a control if something checks it.
 
+    The list is updated in place where a query is reformulated, so retried_once
+    reaches the caller. Without that the guard on it could never fire, and a
+    later stage could not tell which aspects were searched under a query other
+    than the one approved.
+
     No separate search budget is enforced. With the sub-question count fixed
     at three and one retry each, a run is bounded at six searches by
     construction, so the searchBudget field in Diagram 1 could never bind. If
@@ -79,7 +85,7 @@ def retrieve_for_plan(
     all_papers: list[Paper] = []
     thin_coverage: list[int] = []
 
-    for sub_question in sub_questions:
+    for index, sub_question in enumerate(sub_questions):
         papers = retrieve_evidence(sub_question, limit=limit, use_cache=use_cache)
 
         # Assessed once and the result held. Calling the check again in a
@@ -90,6 +96,14 @@ def retrieve_for_plan(
 
         if not met and not sub_question.retried_once:
             sub_question = reformulate_query(sub_question, use_cache=use_cache)
+
+            # Written back into the list the caller holds. Rebinding the loop
+            # variable alone left retried_once set on a copy that was then
+            # discarded, so the flag never reached the caller: the one-retry
+            # guard above could not fire, and the brief could not report which
+            # aspects had been searched under a reformulated query.
+            sub_questions[index] = sub_question
+
             retried_papers = retrieve_evidence(
                 sub_question, limit=limit, use_cache=use_cache
             )
@@ -201,7 +215,12 @@ def validate_dois_and_metadata(papers: list[Paper]) -> list[Paper]:
     return validated
 
 
-def _paper_to_markdown(paper: Paper) -> str:
+def _paper_to_markdown(
+    paper: Paper,
+    summary: str | None = None,
+    score: float | None = None,
+    sub_question_ids: list[int] | None = None,
+) -> str:
     """
     Render one paper for a human reader.
 
@@ -210,8 +229,15 @@ def _paper_to_markdown(paper: Paper) -> str:
     checked and passed or was never checked, and the design proposal requires
     the flagged state to be visible to the researcher rather than held
     internally.
+
+    The abstract is deliberately not reproduced here. The summary exists to
+    spare the reader the abstract, and printing both made the brief largely a
+    repetition of its sources while blurring which text the system produced
+    and which it retrieved. Abstracts remain in the JSON, where a machine
+    reader may want the source text.
     """
-    lines = [f"### {paper.title}", ""]
+    heading = f"### {paper.title}" if score is None else f"### [{score:.2f}] {paper.title}"
+    lines = [heading, ""]
 
     if paper.authors:
         lines.append(f"**Authors:** {', '.join(paper.authors)}")
@@ -228,32 +254,100 @@ def _paper_to_markdown(paper: Paper) -> str:
         lines.append("**DOI:** none in record")
         lines.append("**Verification:** not possible without a DOI")
 
-    # Absence is stated rather than left blank. Semantic Scholar does not
-    # return abstracts for every publisher, and a record with no abstract has
-    # no relevance signal for the Evaluation Agent to score at stage 4. A
-    # silently missing abstract would leave that indistinguishable from one
-    # that was simply not rendered.
-    if paper.abstract:
-        lines.extend(["", paper.abstract])
+    # Which aspects of the question this paper was selected for. Decomposing
+    # the question was what made per-aspect coverage knowable, and a brief
+    # that omits it discards the distinction the decomposition created.
+    if sub_question_ids:
+        aspects = ", ".join(str(i) for i in sub_question_ids)
+        lines.append(f"**Addresses sub-question(s):** {aspects}")
+
+    if summary:
+        lines.extend(["", f"**Summary (generated from the abstract):** {summary}"])
     else:
-        lines.extend(["", "_No abstract available from this source._"])
+        # Stated rather than left blank, so a missing summary is visible as an
+        # absence rather than mistaken for a rendering fault.
+        lines.extend(["", "_No summary was produced for this paper._"])
 
     return "\n".join(lines)
 
 
-def save_papers(papers: list[Paper], query: str) -> tuple[Path, Path]:
+def _brief_to_markdown(brief: Brief, assessments: list[Assessment]) -> str:
     """
-    Write the retrieved papers to Markdown and JSON, and return both paths.
+    Render the brief for a human reader.
+
+    Ordered as a reader needs it: what was asked, what was searched across,
+    what was found, then what the search could not establish. The limitations
+    come last because they qualify everything above them.
+    """
+    out = [f"# Research brief: {brief.research_question}", ""]
+
+    if brief.sub_questions:
+        out.extend(["## Sub-questions searched", ""])
+        for sub_question in brief.sub_questions:
+            out.append(f"{sub_question.id}. {sub_question.text}")
+            out.append(f"   - search query: `{sub_question.search_query}`")
+        out.append("")
+
+    if brief.themes:
+        out.extend(["## Themes across the evidence", ""])
+        out.extend(f"- {theme}" for theme in brief.themes)
+        out.append("")
+
+    if brief.gaps:
+        out.extend(["## Gaps this evidence does not address", ""])
+        out.extend(f"- {gap}" for gap in brief.gaps)
+        out.append("")
+
+    # Scores and sub-question attribution are carried into the output rather
+    # than discarded. A brief recording which papers were selected, but not how
+    # strongly or for which aspect, leaves the researcher unable to review that
+    # judgement afterwards.
+    best_score: dict[str, float] = {}
+    aspects: dict[str, list[int]] = {}
+    for assessment in assessments:
+        if not assessment.selected:
+            continue
+        title = assessment.paper_title
+        best_score[title] = max(best_score.get(title, 0.0), assessment.relevance_score)
+        aspects[title] = sorted(aspects.get(title, []) + [assessment.sub_question_id])
+
+    if brief.selected_papers:
+        # Strongest first, matching the order the researcher reviewed them in.
+        ordered = sorted(
+            brief.selected_papers,
+            key=lambda paper: best_score.get(paper.title, 0.0),
+            reverse=True,
+        )
+        out.extend([f"## Selected papers ({len(ordered)})", ""])
+        for paper in ordered:
+            out.append(
+                _paper_to_markdown(
+                    paper,
+                    brief.summaries.get(paper.title),
+                    best_score.get(paper.title),
+                    aspects.get(paper.title),
+                )
+            )
+            out.append("")
+
+    out.extend(["## Limitations of this search", ""])
+    out.extend(f"- {limitation}" for limitation in brief.limitations)
+
+    return "\n".join(out) + "\n"
+
+
+def save_brief(brief: Brief, assessments: list[Assessment]) -> tuple[Path, Path]:
+    """
+    Write the brief to Markdown and JSON, and return both paths.
 
     Two formats because they serve different readers: Markdown for the
-    researcher, JSON so a later run or a test can read the same records back
+    researcher, JSON so a later run or a test can read the same record back
     without reparsing prose. The design proposal requires both.
 
-    Named save_papers rather than save_brief because a brief, as Diagram 1
-    defines it, carries a research question, sub-questions, summaries, themes
-    and gaps. None of those exist before stage 3, and a function claiming to
-    save a brief while saving a list of papers would misdescribe its output.
-    This is extended to the full Brief at stage 6, once there is one.
+    Named save_brief rather than save_papers because there is now a brief to
+    save. The earlier name described what that function actually wrote, which
+    was a list of papers; renaming it before a Brief existed would have
+    misdescribed its output.
 
     Filenames carry a timestamp so a run cannot overwrite the record of the
     one before it, which is the same reason the log file appends.
@@ -261,44 +355,31 @@ def save_papers(papers: list[Paper], query: str) -> tuple[Path, Path]:
     OUTPUT_DIR.mkdir(exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    json_path = OUTPUT_DIR / f"papers_{stamp}.json"
-    markdown_path = OUTPUT_DIR / f"papers_{stamp}.md"
+    json_path = OUTPUT_DIR / f"brief_{stamp}.json"
+    markdown_path = OUTPUT_DIR / f"brief_{stamp}.md"
+
+    # The JSON carries every assessment, not only the selected ones. Anyone
+    # reconstructing the decision needs to see what was rejected as well as
+    # what was kept, and the Markdown shows only the selection.
+    payload = brief.model_dump()
+    payload["retrieved_at"] = stamp
+    payload["assessments"] = [assessment.model_dump() for assessment in assessments]
 
     # encoding specified explicitly on both writes. Windows defaults to a
     # legacy code page that cannot represent the characters common in author
     # names and abstracts, so an unspecified encoding fails on real data
     # rather than on anything contrived.
     json_path.write_text(
-        json.dumps(
-            {
-                "query": query,
-                "retrieved_at": stamp,
-                "count": len(papers),
-                # model_dump rather than a hand-built dictionary, so a field
-                # added to Paper appears in the output without a second edit.
-                "papers": [paper.model_dump() for paper in papers],
-            },
-            indent=2,
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
+        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+    markdown_path.write_text(_brief_to_markdown(brief, assessments), encoding="utf-8")
 
-    verified = sum(1 for paper in papers if paper.doi_verified)
-    header = [
-        f"# Retrieved papers: {query}",
-        "",
-        f"{len(papers)} records, {verified} verified against Crossref.",
-        "",
-    ]
-    # Records joined by a blank line. A heading immediately following the
-    # previous record's last line renders in most parsers but is fragile and
-    # unreadable as plain text, which matters because the researcher may open
-    # this file in an editor rather than a renderer.
-    body = "\n\n".join(_paper_to_markdown(paper) for paper in papers)
-    markdown_path.write_text("\n".join(header) + "\n" + body + "\n", encoding="utf-8")
-
-    logger.info("Saved %d records to %s and %s", len(papers), markdown_path, json_path)
+    logger.info(
+        "Saved brief with %d paper(s) to %s and %s",
+        len(brief.selected_papers),
+        markdown_path,
+        json_path,
+    )
     return markdown_path, json_path
 
 
@@ -331,9 +412,9 @@ def _plan_with_review(
 
 def run_research(
     question: str, limit: int = 5, use_cache: bool = True
-) -> tuple[list[Paper], list[Assessment]] | None:
+) -> tuple[Brief, list[Assessment]] | None:
     """
-    Run the whole sequence and return the approved evidence, or None if the
+    Run the whole sequence and return the assembled brief, or None if the
     researcher rejected the scope and no revision remains.
 
     The sequence lives here rather than in the entry point because the design
@@ -356,7 +437,7 @@ def run_research(
         papers = retrieve_for_plan(sub_questions, limit=limit, use_cache=use_cache)
         if not papers:
             logger.info("No matching papers for any sub-question.")
-            return [], []
+            return Brief(research_question=question, sub_questions=sub_questions), []
 
         papers = deduplicate_by_doi(papers)
         papers = validate_dois_and_metadata(papers)
@@ -370,7 +451,16 @@ def run_research(
             # the ordering changes.
             approved = [paper for paper in papers if paper.title in kept_titles]
             logger.info("Proceeding with %d approved paper(s)", len(approved))
-            return approved, assessments
+
+            brief = synthesise(
+                question,
+                sub_questions,
+                approved,
+                papers,
+                assessments,
+                use_cache=use_cache,
+            )
+            return brief, assessments
 
         if scope_revisions >= MAX_SCOPE_REVISIONS:
             logger.warning(

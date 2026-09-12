@@ -1,0 +1,359 @@
+{
+  "research_question": "What are the failure modes of LLM-based multi-agent systems?",
+  "sub_questions": [
+    {
+      "id": 1,
+      "text": "What are the common communication and coordination failure modes in LLM-based multi-agent systems?",
+      "search_query": "LLM multi-agent communication failure coordination breakdown",
+      "approved": true,
+      "retried_once": false
+    },
+    {
+      "id": 2,
+      "text": "How do error propagation and cascading failures manifest across interacting language model agents?",
+      "search_query": "error propagation cascading failures multi-agent language models",
+      "approved": true,
+      "retried_once": false
+    },
+    {
+      "id": 3,
+      "text": "What vulnerabilities lead to alignment drift, hallucination amplification, and task derailment in cooperative LLM agents?",
+      "search_query": "alignment drift hallucination amplification task derailment multi-agent systems",
+      "approved": true,
+      "retried_once": false
+    }
+  ],
+  "selected_papers": [
+    {
+      "title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
+      "year": 2025,
+      "doi": "10.48550/arxiv.2502.14847",
+      "authors": [
+        "Pengfei He",
+        "Yuping Lin",
+        "Shen Dong",
+        "Han Xu",
+        "Yue Xing",
+        "Hui Liu"
+      ],
+      "abstract": "Large Language Model-based Multi-Agent Systems (LLM-MAS) have revolutionized complex problem-solving capability by enabling sophisticated agent collaboration through message-based communications. While the communication framework is crucial for agent coordination, it also introduces a critical yet unexplored security vulnerability. In this work, we introduce Agent-in-the-Middle (AiTM), a novel attack that exploits the fundamental communication mechanisms in LLM-MAS by intercepting and manipulating inter-agent messages. Unlike existing attacks that compromise individual agents, AiTM demonstrates how an adversary can compromise entire multi-agent systems by only manipulating the messages passing between agents. To enable the attack under the challenges of limited control and role-restricted communication format, we develop an LLM-powered adversarial agent with a reflection mechanism that generates contextually-aware malicious instructions. Our comprehensive evaluation across various frameworks, communication structures, and real-world applications demonstrates that LLM-MAS is vulnerable to communication-based attacks, highlighting the need for robust security measures in multi-agent systems.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
+      "year": 2025,
+      "doi": "10.48550/arxiv.2508.00032",
+      "authors": [
+        "Alessio Buscemi",
+        "Daniele Proverbio",
+        "A. D. Stefano",
+        "H. Anh",
+        "German Castignani",
+        "Pietro Liò"
+      ],
+      "abstract": "Large Language Model (LLM)-based agents are increasingly deployed in multi-agent scenarios where coordination is crucial but not always assured. Research shows that the way strategic scenarios are framed linguistically can affect cooperation. This paper explores whether allowing agents to communicate amplifies these language-driven effects. Leveraging FAIRGAME, we simulate one-shot and repeated games across different languages and models, both with and without communication. Our experiments, conducted with two advanced LLMs-GPT-4o and Llama 4 Maverick-reveal that communication significantly influences agent behavior, though its impact varies by language, personality, and game structure. These findings underscore the dual role of communication in fostering coordination and reinforcing biases.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
+      "year": 2025,
+      "doi": "10.48550/arxiv.2504.00587",
+      "authors": [
+        "Yingxuan Yang",
+        "Huacan Chai",
+        "Shuai Shao",
+        "Yuanyi Song",
+        "Siyuan Qi",
+        "Renting Rui",
+        "Weinan Zhang"
+      ],
+      "abstract": "The rapid advancement of large language models (LLMs) has enabled the development of multi-agent systems where multiple LLM-based agents collaborate on complex tasks. However, existing systems often rely on centralized coordination, leading to scalability bottlenecks, reduced adaptability, and single points of failure. Privacy and proprietary knowledge concerns further hinder cross-organizational collaboration, resulting in siloed expertise. We propose AgentNet, a decentralized, Retrieval-Augmented Generation (RAG)-based framework that enables LLM-based agents to specialize, evolve, and collaborate autonomously in a dynamically structured Directed Acyclic Graph (DAG). Unlike prior approaches with static roles or centralized control, AgentNet allows agents to adjust connectivity and route tasks based on local expertise and context. AgentNet introduces three key innovations: (1) a fully decentralized coordination mechanism that eliminates the need for a central orchestrator, enhancing robustness and emergent intelligence; (2) dynamic agent graph topology that adapts in real time to task demands, ensuring scalability and resilience; and (3) a retrieval-based memory system for agents that supports continual skill refinement and specialization. By minimizing centralized control and data exchange, AgentNet enables fault-tolerant, privacy-preserving collaboration across organizations. Experiments show that AgentNet achieves higher task accuracy than both single-agent and centralized multi-agent baselines.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "AgentAsk: Multi-Agent Systems Need to Ask",
+      "year": 2025,
+      "doi": "10.48550/arxiv.2510.07593",
+      "authors": [
+        "Bohan Li",
+        "Kuo Yang",
+        "Ying Lai",
+        "Yudong Zhang",
+        "C. Zhang",
+        "Guibin Zhang",
+        "Xinlei Yu",
+        "Miao Yu",
+        "Xu Wang",
+        "Yang Wang"
+      ],
+      "abstract": "Multi-agent systems (MAS) built on large language models promise improved problem-solving through collaboration, yet they often fail to consistently outperform strong single-agent baselines due to error propagation at inter-agent message handoffs.In this work, we conduct a systematic empirical analysis of such failures and introduce an edge-level error taxonomy that identifies four dominant error types: Data Gap, Signal Corruption, Referential Drift, and Capability Gap, as primary sources of failure in multi-agent interactions. Building on this taxonomy, we propose AgentAsk, a lightweight clarification module designed to intervene at the edge level in MAS to prevent cascading errors. The module operates by strategically applying minimal clarifications at critical points within the system, improving the accuracy and efficiency of the overall task. AgentAsk is trained to balance the trade-offs between clarification cost, latency, and accuracy, while it is also architecture-agnostic and can be easily integrated into existing systems. Evaluated across five benchmarks, AgentAsk consistently improves accuracy by up to 4.69%, while keeping latency and extra costs below 10% compared to baseline MAS, showcasing its high efficiency and minimal overhead.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "year": 2026,
+      "doi": "10.48550/arxiv.2605.23927",
+      "authors": [
+        "Xingyu Xiao",
+        "Jiejuan Tong",
+        "Jingang Liang",
+        "Haitao Wang"
+      ],
+      "abstract": "Team-level failure in nuclear control rooms arises not from isolated operator error, but from emergent interaction dynamics, delayed diagnosis, suppressed dissent, and authority-driven error propagation, that conventional human reliability analysis methods are structurally unable to model. This study introduces TEAM-SimHRA, a multi-agent large language model simulation framework that reconceptualizes human reliability as an interaction-driven emergent property of control room teams rather than a static individual attribute. Unlike existing approaches that assign fixed error probabilities to predefined tasks, TEAM-SimHRA reproduces collective cognition, role-conditioned authority dynamics, and real-time communication suppression across temporally evolving accident progressions. Validated against the Three Mile Island (1979) and Chernobyl (1986) accidents, the two most extensively documented nuclear team failures , the framework achieves face-validity pass rates of 43.5% and 52.6% respectively, reproducing near-historical decision delay (134.8 vs. 138 min), perfect communication suppression stability, and full authority pressure cascade at historically accurate propagation depth. These results demonstrate that multi-agent simulation can extract quantitative team-level reliability indicators that are inaccessible to traditional methods, opening a viable path toward simulation-based dynamic probabilistic risk assessment for safety-critical sociotechnical systems.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "year": 2025,
+      "doi": "10.48550/arxiv.2502.11799",
+      "authors": [
+        "Peiying Yu",
+        "Guoxin Chen",
+        "Jingjing Wang"
+      ],
+      "abstract": "Despite the remarkable capabilities of large language models (LLMs) in various reasoning tasks, they still struggle with table reasoning tasks, particularly in maintaining consistency throughout multi-step reasoning processes. While existing approaches have explored various decomposition strategies, they often lack effective mechanisms to identify and correct errors in intermediate reasoning steps, leading to cascading error propagation. To address these issues, we propose Table-Critic, a novel multi-agent framework that facilitates collaborative criticism and iterative refinement of the reasoning process until convergence to correct solutions. Our framework consists of four specialized agents: a Judge for error identification, a Critic for comprehensive critiques, a Refiner for process improvement, and a Curator for pattern distillation. To effectively deal with diverse and unpredictable error types, we introduce a self-evolving template tree that systematically accumulates critique knowledge through experience-driven learning and guides future reflections. Extensive experiments have demonstrated that Table-Critic achieves substantial improvements over existing methods, achieving superior accuracy and error correction rates while maintaining computational efficiency and lower solution degradation rate.",
+      "doi_verified": false,
+      "verification_note": "arXiv preprint, registered with DataCite not Crossref"
+    },
+    {
+      "title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
+      "year": 2026,
+      "doi": "10.65109/hzer2072",
+      "authors": [
+        "Jiawei Guo",
+        "Hongjie Nie",
+        "Qianbo Zang",
+        "Shu Yang",
+        "Shuodi Liu",
+        "Yiwei Ru",
+        "Liuyu Xiang",
+        "Di Wang",
+        "Zhaofeng He"
+      ],
+      "abstract": "Large Language Model (LLM) agents that browse the web are increasingly important, but their effectiveness is hindered by imperfect integration of internal knowledge and external tools. We introduce BrowseBench and present the first systematic investigation into over-reliance patterns of browsing agents. Through controlled experiments, we identify three distinct failure modes: (1) Excessive Conservatism—unnecessary tool invocations for known information; (2) Over-trust in Web Sources—uncritical acceptance of retrieved content; and (3) Planning Deficiency—lack of query decomposition strategies. To address these, we propose three mitigation strategies: Direct Preference Optimization (DPO), Attention Refinement (AR), and Hierarchical Query Decomposition (HQD). Experiments demonstrate that our interventions significantly reduce over-reliance and enhance performance.",
+      "doi_verified": true,
+      "verification_note": null
+    }
+  ],
+  "summaries": {
+    "Red-Teaming LLM Multi-Agent Systems via Communication Attacks": "This paper introduces Agent-in-the-Middle (AiTM), a novel attack that exploits communication mechanisms in LLM-based multi-agent systems by intercepting and manipulating inter-agent messages. It demonstrates that adversaries can compromise entire multi-agent systems solely by altering messages passed between agents using an LLM-powered adversarial agent with a reflection mechanism. The comprehensive evaluation highlights that these systems are vulnerable to communication-based security attacks.",
+    "Strategic Communication and Language Bias in Multi-Agent LLM Coordination": "This research explores how linguistic framing and strategic communication affect cooperation in LLM-based multi-agent coordination scenarios. Using FAIRGAME simulations with advanced LLMs, the study reveals that communication significantly influences agent behavior and can reinforce existing biases. The findings highlight a dual role for communication in both fostering coordination and propagating language-driven effects.",
+    "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems": "This paper addresses centralized coordination bottlenecks, scalability limits, and single points of failure in LLM multi-agent systems by proposing AgentNet, a decentralized Retrieval-Augmented Generation-based framework. AgentNet allows agents to specialize, evolve, and collaborate autonomously in a dynamically structured Directed Acyclic Graph. The framework enables fault-tolerant, privacy-preserving collaboration through decentralized coordination, dynamic graph topology, and a retrieval-based memory system.",
+    "AgentAsk: Multi-Agent Systems Need to Ask": "This work identifies error propagation at inter-agent message handoffs as a primary reason multi-agent systems fail to consistently outperform single-agent baselines. It establishes an edge-level error taxonomy consisting of Data Gap, Signal Corruption, Referential Drift, and Capability Gap. To prevent cascading errors, the authors propose AgentAsk, a lightweight clarification module that applies minimal edge-level interventions.",
+    "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models": "This study introduces TEAM-SimHRA to model team-level failures and emergent interaction dynamics in nuclear control rooms using multi-agent large language models. Validated against historical accidents like Three Mile Island and Chernobyl, the framework successfully reproduces collective cognition, role-conditioned authority dynamics, communication suppression, and authority pressure cascades. It demonstrates that multi-agent simulation can extract quantitative reliability indicators for sociotechnical systems.",
+    "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning": "This paper addresses cascading error propagation during multi-step reasoning processes in table reasoning by introducing Table-Critic, a multi-agent framework for collaborative criticism and iterative refinement. The framework utilizes specialized agents including a Judge, Critic, Refiner, and Curator, supported by a self-evolving template tree to accumulate critique knowledge. Experiments show that this approach achieves superior accuracy and error correction rates.",
+    "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents": "This research investigates over-reliance patterns in LLM browsing agents regarding internal knowledge versus external tools through BrowseBench. It identifies three distinct failure modes: excessive conservatism, over-trust in web sources, and planning deficiency. The paper proposes and evaluates mitigations such as Direct Preference Optimization, Attention Refinement, and Hierarchical Query Decomposition."
+  },
+  "themes": [
+    "Vulnerabilities and security risks stemming from inter-agent communication and message manipulation",
+    "Cascading error propagation and failures occurring across inter-agent message handoffs and reasoning steps",
+    "Coordination challenges, including centralized bottlenecks and the dual role of communication in fostering cooperation versus reinforcing bias",
+    "Mitigation strategies and architectures designed to improve reliability, such as decentralized frameworks, clarification modules, and iterative refinement mechanisms"
+  ],
+  "gaps": [
+    "The long-term evolutionary stability and behavioral drift of multi-agent systems operating autonomously over extended deployment periods",
+    "Quantitative economic or computational cost-benefit trade-offs of deploying complex multi-agent architectures versus simpler baseline models in high-stakes environments"
+  ],
+  "limitations": [
+    "Summaries derive from abstracts alone. Full texts were not retrieved, so methods, results and limitations reported only in the body of a paper are not represented here.",
+    "One literature source was searched. Records held only by other indexes will not appear.",
+    "6 of 7 selected papers could not be independently verified against Crossref. Most are preprints registered with a different agency rather than doubtful records; each paper states its own reason."
+  ],
+  "retrieved_at": "20260912_163518",
+  "assessments": [
+    {
+      "paper_title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
+      "sub_question_id": 1,
+      "relevance_score": 0.9,
+      "reason": "The paper directly addresses communication failure modes by analyzing how message interception and manipulation can compromise LLM-based multi-agent systems.",
+      "selected": true
+    },
+    {
+      "paper_title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
+      "sub_question_id": 2,
+      "relevance_score": 0.5,
+      "reason": "It discusses compromising entire multi-agent systems through message manipulation, but does not deeply focus on natural error propagation across interacting agents.",
+      "selected": false
+    },
+    {
+      "paper_title": "Red-Teaming LLM Multi-Agent Systems via Communication Attacks",
+      "sub_question_id": 3,
+      "relevance_score": 0.3,
+      "reason": "While it touches on security vulnerabilities, it focuses on adversarial communication attacks rather than intrinsic alignment drift or hallucination amplification.",
+      "selected": false
+    },
+    {
+      "paper_title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
+      "sub_question_id": 1,
+      "relevance_score": 0.7,
+      "reason": "It investigates how communication and language framing affect LLM agent coordination and behavior in multi-agent scenarios.",
+      "selected": true
+    },
+    {
+      "paper_title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
+      "sub_question_id": 2,
+      "relevance_score": 0.2,
+      "reason": "It does not explicitly model error propagation or cascading failures across interacting language model agents.",
+      "selected": false
+    },
+    {
+      "paper_title": "Strategic Communication and Language Bias in Multi-Agent LLM Coordination",
+      "sub_question_id": 3,
+      "relevance_score": 0.4,
+      "reason": "It highlights the dual role of communication in reinforcing biases, which relates moderately to alignment and coordination issues.",
+      "selected": false
+    },
+    {
+      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
+      "sub_question_id": 1,
+      "relevance_score": 0.6,
+      "reason": "It discusses coordination failure modes such as centralized bottlenecks and single points of failure in multi-agent systems.",
+      "selected": true
+    },
+    {
+      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
+      "sub_question_id": 2,
+      "relevance_score": 0.2,
+      "reason": "It briefly mentions fault-tolerant collaboration but does not study error propagation or cascading failures in depth.",
+      "selected": false
+    },
+    {
+      "paper_title": "AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems",
+      "sub_question_id": 3,
+      "relevance_score": 0.1,
+      "reason": "The abstract focuses on decentralized coordination topologies and RAG-based memory rather than alignment drift or task derailment.",
+      "selected": false
+    },
+    {
+      "paper_title": "AgentAsk: Multi-Agent Systems Need to Ask",
+      "sub_question_id": 1,
+      "relevance_score": 0.7,
+      "reason": "It identifies specific inter-agent message handoff failures and introduces an edge-level error taxonomy for multi-agent interactions.",
+      "selected": true
+    },
+    {
+      "paper_title": "AgentAsk: Multi-Agent Systems Need to Ask",
+      "sub_question_id": 2,
+      "relevance_score": 1.0,
+      "reason": "The paper directly addresses how error propagation manifests across interacting agents and proposes a module to prevent cascading errors.",
+      "selected": true
+    },
+    {
+      "paper_title": "AgentAsk: Multi-Agent Systems Need to Ask",
+      "sub_question_id": 3,
+      "relevance_score": 0.6,
+      "reason": "It categorizes dominant error types like Data Gap and Referential Drift which relate to cooperative agent task derailment.",
+      "selected": true
+    },
+    {
+      "paper_title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "sub_question_id": 1,
+      "relevance_score": 0.8,
+      "reason": "It explicitly models team-level failure modes like delayed diagnosis, suppressed dissent, and communication suppression in multi-agent LLM simulations.",
+      "selected": true
+    },
+    {
+      "paper_title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "sub_question_id": 2,
+      "relevance_score": 0.7,
+      "reason": "It examines authority-driven error propagation and real-time communication suppression across temporally evolving processes.",
+      "selected": true
+    },
+    {
+      "paper_title": "TEAM-SimHRA: A Team-Based Simulation Framework for Human Reliability Analysis Using Multi-Agent Large Language Models",
+      "sub_question_id": 3,
+      "relevance_score": 0.3,
+      "reason": "While it focuses on sociotechnical safety and team reliability, it does not specifically address alignment drift or hallucination amplification.",
+      "selected": false
+    },
+    {
+      "paper_title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "sub_question_id": 1,
+      "relevance_score": 0.5,
+      "reason": "It addresses coordination challenges in multi-step reasoning processes and intermediate error identification.",
+      "selected": false
+    },
+    {
+      "paper_title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "sub_question_id": 2,
+      "relevance_score": 0.9,
+      "reason": "The paper directly targets intermediate reasoning errors and the problem of cascading error propagation in multi-agent frameworks.",
+      "selected": true
+    },
+    {
+      "paper_title": "Table-Critic: A Multi-Agent Framework for Collaborative Criticism and Refinement in Table Reasoning",
+      "sub_question_id": 3,
+      "relevance_score": 0.4,
+      "reason": "It deals with error correction and consistency in reasoning tasks, but does not focus broadly on alignment drift or task derailment.",
+      "selected": false
+    },
+    {
+      "paper_title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
+      "sub_question_id": 1,
+      "relevance_score": 0.2,
+      "reason": "It focuses on single browsing agent over-reliance patterns rather than multi-agent communication and coordination failure modes.",
+      "selected": false
+    },
+    {
+      "paper_title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
+      "sub_question_id": 2,
+      "relevance_score": 0.1,
+      "reason": "It does not discuss error propagation across interacting language model agents.",
+      "selected": false
+    },
+    {
+      "paper_title": "The Web Tool Trap: Understanding and Mitigating Over-Reliance in LLM Browsing Agents",
+      "sub_question_id": 3,
+      "relevance_score": 0.7,
+      "reason": "It investigates over-reliance patterns, excessive conservatism, and planning deficiencies that lead to task failures in LLM agents.",
+      "selected": true
+    },
+    {
+      "paper_title": "FineGRAIN: Evaluating Failure Modes of Text-to-Image Models with Vision Language Model Judges",
+      "sub_question_id": 1,
+      "relevance_score": 0.0,
+      "reason": "The paper is about text-to-image models and vision language models, not LLM-based multi-agent communication.",
+      "selected": false
+    },
+    {
+      "paper_title": "FineGRAIN: Evaluating Failure Modes of Text-to-Image Models with Vision Language Model Judges",
+      "sub_question_id": 2,
+      "relevance_score": 0.0,
+      "reason": "It does not address error propagation across interacting language model agents.",
+      "selected": false
+    },
+    {
+      "paper_title": "FineGRAIN: Evaluating Failure Modes of Text-to-Image Models with Vision Language Model Judges",
+      "sub_question_id": 3,
+      "relevance_score": 0.1,
+      "reason": "It evaluates specific attribute failure modes in text-to-image generation rather than cooperative LLM agent alignment drift.",
+      "selected": false
+    },
+    {
+      "paper_title": "Trust at Your Own Peril: A Mixed Methods Exploration of the Ability of Large Language Models to Generate Expert‐Like Systems Engineering Artifacts and a Characterization of Failure Modes",
+      "sub_question_id": 1,
+      "relevance_score": 0.1,
+      "reason": "It analyzes general LLM-generated artifacts rather than multi-agent communication or coordination.",
+      "selected": false
+    },
+    {
+      "paper_title": "Trust at Your Own Peril: A Mixed Methods Exploration of the Ability of Large Language Models to Generate Expert‐Like Systems Engineering Artifacts and a Characterization of Failure Modes",
+      "sub_question_id": 2,
+      "relevance_score": 0.0,
+      "reason": "It does not cover cascading failures across interacting language model agents.",
+      "selected": false
+    },
+    {
+      "paper_title": "Trust at Your Own Peril: A Mixed Methods Exploration of the Ability of Large Language Models to Generate Expert‐Like Systems Engineering Artifacts and a Characterization of Failure Modes",
+      "sub_question_id": 3,
+      "relevance_score": 0.5,
+      "reason": "It characterizes severe failure modes like premature requirements definition and overspecification in LLM outputs, which relates to task reliability.",
+      "selected": false
+    }
+  ]
+}

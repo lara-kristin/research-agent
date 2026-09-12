@@ -17,19 +17,15 @@ from src.clients import gemini_limiter, post
 
 logger = logging.getLogger(__name__)
 
-# Pinned to an exact version rather than an alias such as gemini-flash-latest.
-# An alias points at a different model over time, so recorded evidence would
-# stop describing the system a reader runs. gemini-2.5-flash was tried first
-# and returned 404: it is no longer available to new keys, which is also why
-# availability is confirmed by calling a model rather than by listing it.
+# Pinned to an exact version rather than an alias such as gemini-flash-latest,
+# so that recorded evidence keeps describing the system a reader runs.
 #
-# The lite variant rather than gemini-3.6-flash, which was used initially. The
-# project's free-tier allowance for this model is 500 requests per day against
-# 20 for 3.6-flash, and 15 per minute against 5. The semantic tasks asked of
-# the model here are question decomposition and query reformulation, neither
-# of which requires the strongest available model, so capability that is not
-# needed is traded for runs that are. Output quality between the two was not
-# compared: the change was made for quota reasons.
+# The lite variant: the project's free-tier allowance is 500 requests per day
+# against 20 for gemini-3.6-flash, and 15 per minute against 5. Decomposition,
+# query reformulation, relevance scoring and synthesis do not require the
+# strongest available model, so capability that is not needed is traded for
+# runs that are. Output quality between the two was not compared; the change
+# was made for quota reasons.
 MODEL = "gemini-3.5-flash-lite"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 

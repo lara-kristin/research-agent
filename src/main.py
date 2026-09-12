@@ -20,7 +20,7 @@ from src.clients import QuotaExhaustedError, RetryableHTTPError
 from src.llm import LLMResponseError
 from src.llm import MissingAPIKeyError as MissingLLMKeyError
 from src.logging_setup import configure
-from src.orchestrator import run_research, save_papers
+from src.orchestrator import run_research, save_brief
 from src.semantic_scholar import MissingAPIKeyError
 
 # Named explicitly rather than taken from __name__. Running a module with -m
@@ -108,13 +108,12 @@ def main() -> int:
         )
         return 1
 
-    papers, _assessments = result
+    brief, assessments = result
 
-    if not papers:
-        logger.info("No approved evidence. Nothing to save.")
-        return 0
-
-    markdown_path, json_path = save_papers(papers, args.query)
+    # A brief with no approved papers is still written. It records what was
+    # asked, what was searched and why nothing was selected, which is a more
+    # useful outcome for the researcher than no file at all.
+    markdown_path, json_path = save_brief(brief, assessments)
     logger.info("Done. %s and %s", markdown_path, json_path)
     return 0
 

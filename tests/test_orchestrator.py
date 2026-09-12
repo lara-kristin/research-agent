@@ -50,14 +50,42 @@ def test_records_without_a_doi_are_all_retained():
     assert len(deduplicate_by_doi(papers)) == 3
 
 
-def test_missing_abstract_is_stated_not_omitted():
+def test_missing_summary_is_stated_not_omitted():
     """
-    Semantic Scholar does not return abstracts for every publisher, and a
-    record with no abstract has no relevance signal for the Evaluation Agent
-    to score. A blank space would be indistinguishable from a rendering fault.
+    A paper can reach the brief without a summary if the model returned none
+    for it. Stating the absence keeps it visible: a blank space would be
+    indistinguishable from a rendering fault, and a placeholder summary would
+    read as though the paper had been summarised.
+
+    This replaces an earlier test asserting the same of a missing abstract.
+    Abstracts are no longer reproduced in the brief, and a paper without one
+    cannot be scored, so it can never reach the selected set.
     """
     rendered = _paper_to_markdown(Paper(title="A", doi="10.1/x"))
-    assert "No abstract available" in rendered
+    assert "No summary was produced" in rendered
+
+
+def test_summary_is_labelled_as_generated():
+    """
+    The brief mixes text the system produced with metadata it retrieved. A
+    summary presented without attribution leaves a reader unable to tell which
+    is which, in a document whose purpose is to distinguish them.
+    """
+    rendered = _paper_to_markdown(Paper(title="A", doi="10.1/x"), summary="A summary.")
+    assert "generated from the abstract" in rendered
+
+
+def test_sub_question_attribution_is_rendered():
+    """
+    Decomposing the question is what made per-aspect coverage knowable. A
+    brief omitting which aspects a paper addresses discards the distinction
+    the decomposition created.
+    """
+    rendered = _paper_to_markdown(
+        Paper(title="A", doi="10.1/x"), summary="S", score=0.8, sub_question_ids=[1, 3]
+    )
+    assert "Addresses sub-question(s):** 1, 3" in rendered
+    assert "[0.80]" in rendered
 
 
 def test_verification_status_appears_on_verified_records_too():
@@ -179,3 +207,34 @@ def test_original_result_kept_when_reformulation_finds_no_more(monkeypatch):
     papers = orchestrator.retrieve_for_plan([_approved(1)])
 
     assert len(papers) == 2
+
+
+def test_a_reformulated_query_is_recorded_on_the_sub_question(monkeypatch):
+    """
+    The retry flag must reach the caller, not just the loop variable.
+
+    An earlier version rebound the loop variable, so retried_once was set on a
+    copy that was immediately discarded. Nothing downstream could see it: the
+    one-retry guard could never fire, and the brief could not report which
+    aspects had been searched under a query other than the approved one. The
+    behaviour was correct in every run only because each sub-question is
+    visited once.
+    """
+    monkeypatch.setattr(
+        orchestrator,
+        "retrieve_evidence",
+        lambda sq, limit=5, use_cache=True: _papers(1),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "reformulate_query",
+        lambda sq, use_cache=True: sq.model_copy(
+            update={"search_query": "broader", "retried_once": True}
+        ),
+    )
+
+    sub_questions = [_approved(1)]
+    orchestrator.retrieve_for_plan(sub_questions)
+
+    assert sub_questions[0].retried_once is True
+    assert sub_questions[0].search_query == "broader"

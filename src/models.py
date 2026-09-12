@@ -108,6 +108,33 @@ class Assessment(BaseModel):
     selected: bool = False
 
 
+class Brief(BaseModel):
+    """
+    The research brief. Mirrors Brief in Diagram 1.
+
+    Summaries, themes and gaps are produced by the model, since each requires
+    reading what the papers say. Limitations are not: they are assembled from
+    what the run itself recorded, because the system knows which records it
+    could not verify and which sub-questions returned thin coverage. A model
+    asked to state limitations would produce plausible ones rather than the
+    actual ones, which is the unfaithful-summarisation failure the design
+    proposal cites.
+    """
+
+    research_question: str
+    sub_questions: list[SubQuestion] = Field(default_factory=list)
+    selected_papers: list[Paper] = Field(default_factory=list)
+
+    # Keyed by paper title, matching how assessments identify papers. A paper
+    # with no summary is visible as an absence rather than as a silent gap in
+    # a positional list.
+    summaries: dict[str, str] = Field(default_factory=dict)
+
+    themes: list[str] = Field(default_factory=list)
+    gaps: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+
+
 class SearchResponse(BaseModel):
     """
     The shape of a Semantic Scholar search response, as distinct from the
