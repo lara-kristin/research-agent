@@ -51,16 +51,20 @@ Dependencies are pinned in `requirements.txt`:
 | `tenacity` | retry with exponential backoff |
 | `pytest` | test runner |
 
-API keys are needed for Semantic Scholar and Google Gemini. Both are free.
-Crossref needs no key, though a contact address is requested.
+API keys are needed for Semantic Scholar and Google Gemini. Both offer
+free-tier access, and this project used it. Crossref needs no key, though a
+contact address is requested.
 
-The free tiers impose limits that shape how the system behaves. Semantic
-Scholar allows one request per second across its endpoints and returns 429
-frequently regardless; the Gemini free tier allowed 15 requests per minute and
-500 per day for the pinned model at the time of writing. Both figures are
-worth checking against the providers, since they change. A single run uses
-between two and six model requests depending on how often a query is
-reformulated.
+External service limits shape how the system behaves. The Semantic Scholar key
+issued for this project allowed one request per second across its endpoints,
+and intermittent 429 responses occurred during development even with
+deliberate pacing. The Gemini free tier allowed 15 requests per minute and 500
+per day for the pinned model. Provider limits change and are worth checking
+before use.
+
+A completed run normally uses three model requests: decomposition, relevance
+assessment and synthesis. Each reformulated query adds one, as do
+researcher-requested revisions and the scope-revision cycle.
 
 ## Installation
 
@@ -96,9 +100,8 @@ CROSSREF_CONTACT_EMAIL=your.email@example.com
 
 A Semantic Scholar key can be requested at
 https://www.semanticscholar.org/product/api, and a Gemini key created at
-https://aistudio.google.com. The Crossref contact address is optional: it
-identifies the caller and grants access to a more reliably provisioned pool of
-servers.
+https://aistudio.google.com. The Crossref contact address is optional but
+recommended: it identifies the caller and uses Crossref's polite pool.
 
 `.env` is excluded from version control and should not be committed.
 
@@ -156,9 +159,10 @@ exhausted daily quota.
 - Abstracts only. Full texts are not retrieved, so anything reported only in
   the body of a paper is not represented.
 - One literature source. Records held only by other indexes will not appear.
-- Validation reaches Crossref-registered records. Preprints registered with
-  other agencies, notably arXiv, are identified as such rather than verified,
-  and a large share of results in some fields are preprints.
+- Validation reaches Crossref-registered records. A DOI registered with
+  another agency, such as DataCite, cannot be confirmed through Crossref; this
+  affected most arXiv preprints encountered during development, which are
+  identified as such rather than verified.
 - Relevance scores are coarse bands rather than fine measurements.
 - Each brief states the limitations that applied to its own run.
 
