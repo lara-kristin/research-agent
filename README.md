@@ -2,7 +2,7 @@
 
 An agent-based system that helps a researcher begin a literature search. It
 decomposes a research question into sub-questions, retrieves scholarly
-literature for each, validates what it finds against an independent source,
+literature for each, checks what it finds against an independent source,
 assesses relevance, and assembles a research brief.
 
 It is intended for the start of a search rather than the end of one: the
@@ -63,8 +63,11 @@ per day for the pinned model. Provider limits change and are worth checking
 before use.
 
 A completed run normally uses three model requests: decomposition, relevance
-assessment and synthesis. Each reformulated query adds one, as do
-researcher-requested revisions and the scope-revision cycle.
+assessment and synthesis. Each reformulated query adds one, as does each
+revision requested at the first checkpoint. One scope-revision cycle is
+permitted per run; if used, it adds two model requests for re-planning and
+re-evaluation, plus any query-reformulation calls triggered during the
+repeated retrieval.
 
 ## Installation
 
@@ -161,8 +164,8 @@ exhausted daily quota.
 - One literature source. Records held only by other indexes will not appear.
 - Validation reaches Crossref-registered records. A DOI registered with
   another agency, such as DataCite, cannot be confirmed through Crossref; this
-  affected most arXiv preprints encountered during development, which are
-  identified as such rather than verified.
+  affected the arXiv preprints encountered during development, which were
+  therefore identified as unverified rather than independently confirmed.
 - Relevance scores are coarse bands rather than fine measurements.
 - Each brief states the limitations that applied to its own run.
 
