@@ -151,6 +151,25 @@ available while a service is rate limiting. It also covers conditions the live
 services do not produce on demand, such as a malformed response body or an
 exhausted daily quota.
 
+## Why this model
+
+Google positions `gemini-3.5-flash-lite` for high-throughput, low-cost
+subagent tasks and document parsing, which is what this system asks of it. It
+is a stable release rather than a preview, which carries less restricted rate
+limits.
+
+The binding constraint is requests per day, not capability or context. The
+model accepts 1,048,576 input tokens and the largest prompt here is around
+3,400, so under 1% of the window is used. The free tier allows 500 requests
+per day against 20 for `gemini-3.6-flash`, and a run uses between two and six.
+
+Output quality against that alternative was not compared. The comparison was
+attempted over three research questions and could not be completed: this model
+answered all three, while `gemini-3.6-flash` failed every attempt, first on
+repeated high-demand responses and then on quota exhaustion. An allowance that
+cannot support a comparison would not support a working system. The attempt is
+in `evidence/30_model_comparison_attempt.txt`.
+
 ## Scope and limitations
 
 - Abstracts only. Full texts are not retrieved, so anything reported only in
@@ -175,10 +194,8 @@ This project uses the following external services. None is affiliated with it.
 - **Google Gemini API**, the language model used for question decomposition,
   query reformulation, relevance assessment and summarisation. Pinned to
   `gemini-3.5-flash-lite` rather than an alias such as `gemini-flash-latest`,
-  so that a later run describes the same system. The lite variant was chosen
-  for its free-tier allowance, 500 requests per day against 20 for
-  `gemini-3.6-flash`; the semantic tasks here do not require the strongest
-  available model. Output quality between the two was not compared.
+  so that a later run describes the same system. The reasoning behind the
+  choice is in "Why this model" above.
 - **httpbin.org**, used to produce deterministic HTTP error responses when
   testing retry behaviour. Not used at runtime.
 
